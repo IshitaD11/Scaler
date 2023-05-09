@@ -1,0 +1,71 @@
+/* Q4. Change character
+You are given a string A of size N consisting of lowercase alphabets.
+
+You can change at most B characters in the given string to any other lowercase alphabet such that the number of distinct characters in the string is minimized.
+
+Find the minimum number of distinct characters in the resulting string.
+
+
+
+Problem Constraints
+1 <= N <= 100000
+
+0 <= B < N
+
+
+
+Input Format
+The first argument is a string A.
+
+The second argument is an integer B.
+
+
+
+Output Format
+Return an integer denoting the minimum number of distinct characters in the string.
+
+
+
+Example Input
+A = "abcabbccd"
+B = 3
+
+
+
+Example Output
+2
+
+
+
+Example Explanation
+We can change both 'a' and one 'd' into 'b'.So the new string becomes "bbcbbbccb".
+So the minimum number of distinct character will be 2. */
+
+public class Solution {
+    public int solve(String A, int B) {
+        // frequency array
+        int[] freq = new int[26];
+        for(int i=0;i<A.length();i++)
+        {
+            freq[A.charAt(i)-'a']++;
+        }
+        //sorting array so that we can change the characters where frequency is less, to get minimum remaining distint element
+        Arrays.sort(freq); 
+        int indx=0;
+        // decrease B - freqency, means these elements can be changed with any remaining characters. 
+        while(B>=0 && indx<26)
+        {
+            B=B-freq[indx++];
+        }
+        // count of the remaining distinct characters is the result after B is exhausted. As B will be negative when comes out of the loop,
+        // so need to consider from the previous index. hence i=indx-1
+        int cnt=0;
+        for(int i=indx-1;i<26;i++)
+        {
+            if(freq[i]==0)
+                break;
+            cnt++;
+        }
+        return cnt;
+    }
+}
