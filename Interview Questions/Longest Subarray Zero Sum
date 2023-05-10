@@ -1,0 +1,50 @@
+/* Longest Subarray Zero Sum - Coding Ninja - Discussed on problem solving class of scaler
+
+Given the array ar[] of size, n has positive and negative integers. From the array ar[], find the length of the largest subarray having a 0 sum.
+Example 1:
+ar[] = [1 3 -1 4 -4]
+Output: 2
+In the first test case, the given array is (1, 3, -1, 4, -4). 
+The sub-arrays we can create are (1), (3), (-1), (4), (-4), (1, 3), (3, -1), (-1, 4), (4, -4), (1, 3, -1), (3, -1, 4), (-1, 4, -4), (1, 3, -1, 4), (3, -1, 4, -4), (1, 3, -1, 4, -4). 
+Out of them only (4, -4) is the sub array whose sum is zero.Length of this sub array is 2 and hence we return 2 as the final answer.
+
+Example 2:
+[1 -1 2 -2]
+Output: 4
+In the second test case, the given array is (1, -1, 2, -2). 
+The sub-arrays we can create are (1), (-1), (2), (-2), (1, -1), (-1, 2), (2, -2), (1, -1, 2), (-1, 2, -2), (1, -1, 2, -2). 
+Out of them sub arrays with zer sum are (1, -1), (2, -2), (1, -1, 2, -2). Out of them only (1, -1, 2, -2) has the longest length of 4. Hence we return 4 as the final answer.
+*/
+
+import java.io.*;
+import java.util.* ;
+
+import java.util.ArrayList;
+ /*To get the sum=0, need to find the sum of each sub array by prefixSum or carry forward.
+ When the same sum occurs twice meaning pf[i]-pf[j]=5-5=0, this will be the subaary with sum 0.
+ Create and hashmap to store sum and the index. 
+ Do not update index for 2nd occurance of sum, as we need longest length. 
+ index will store left most occurance, and we will check occurance on the right side every time. For each find on the right side, length will increase
+ store (0,-1) in hashset to handle when sum is 0. [5,-2,-2,5] sum=0 at index 3. length = 3-0+1. 
+ To handle (+1) part, we are storing (0,-1), so at occurance of 0, len = index - (-1) = index+1 */
+public class Solution {
+
+	public static int LongestSubsetWithZeroSum(ArrayList<Integer> arr) {
+
+		HashMap<Integer,Integer> map = new HashMap<Integer,Integer>();
+		int max_len=0;
+		int sum=0;
+		map.put(0,-1); 
+		for(int i=0;i<arr.size();i++)
+		{
+			sum+=arr.get(i);
+			if(map.containsKey(sum))
+			{
+				max_len = Math.max((i-map.get(sum)),max_len);
+			}
+			else
+				map.put(sum,i);
+		}
+		return max_len;
+	}
+}
