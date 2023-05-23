@@ -1,0 +1,94 @@
+/* Q3. Rain Water Trapped
+
+All Approches: https://leetcode.com/problems/trapping-rain-water/description/
+
+Problem Description
+Given a vector A of non-negative integers representing an elevation map where the width of each bar is 1, compute how much water it is able to trap after raining.
+
+
+
+Problem Constraints
+1 <= |A| <= 100000
+
+
+
+Input Format
+First and only argument is the vector A
+
+
+
+Output Format
+Return one integer, the answer to the question
+
+
+
+Example Input
+Input 1:
+
+A = [0, 1, 0, 2]
+Input 2:
+
+A = [1, 2]
+
+
+Example Output
+Output 1:
+
+1
+Output 2:
+
+0
+
+
+Example Explanation
+Explanation 1:
+
+1 unit is trapped on top of the 3rd element.
+Explanation 2:
+
+No water is trapped. */
+
+/*Two pointer approach: consider leftmax and rightmax, starting from the left and right end respectively.
+if leftmax < rightmax -->  then leftmax is my minimum height, water = leftmax-A[i]
+similarly is rightmax < leftmax --> then rightmax is my minimum height, water = rightmax-A[i]
+When A[i] is greater than leftmax or rightmax --> do not calculate water, instead update the leftmax and rightmax only.
+when leftmax == rightmax --> do the check for leftmax/rightmax, it will be the same */
+
+public class Solution {
+    // DO NOT MODIFY THE ARGUMENTS WITH "final" PREFIX. IT IS READ ONLY
+    public int trap(final int[] A) {
+        int left = 0;
+        int right = A.length-1;
+        int leftMax=A[left];
+        int rightMax=A[right];
+        int water=0;
+        while(left<right)
+        {
+            if(leftMax<rightMax)
+            {
+                left++;
+                if(leftMax<A[left])
+                {
+                    leftMax=A[left];
+                }
+                else
+                {
+                    water += leftMax-A[left];
+                }
+            }
+            else
+            {
+                right--;
+                if(rightMax<A[right])
+                {
+                    rightMax=A[right];
+                }
+                else
+                {
+                    water += rightMax-A[right];
+                }
+            }
+        }
+        return water;
+    }
+}
