@@ -1,5 +1,11 @@
 /* Q1. Max Sum Contiguous Subarray
 
+Store the sum max till now, if we get negative value sum will be less, then start new SubArray
+So sum=max of (prev sum+A[i] and A[i]) --> to store subarray sum
+maxSum --> to keep track of max sum
+TC: O(n) SC: O(1)
+*/
+
 Problem Description
 Find the contiguous non-empty subarray within an array, A of length N, with the largest sum.
 
@@ -47,7 +53,31 @@ Explanation 2:
 
  The subarray [4,-1,2,1] has the maximum possible sum of 6. */
  
- /* Store the sum max till now, if we get negative value sum will be less, then start new SubArray
+ /* Carry Forward Sum: O(n^2) approch: 
+https://www.scaler.com/academy/mentee-dashboard/class/69631/assignment/problems/16121?navref=cl_tt_lst_nm 
+
+public class Solution {
+    public int maxSubarray(int A, int B, int[] C) {
+        int maxSum=0;
+        for(int i=0;i<C.length;i++)
+        {
+            int sum=0;
+            for(int j=i;j<A;j++)
+            {
+                sum+=C[j];
+                if(sum<=B)
+                {
+                    maxSum=Math.max(maxSum,sum);
+                }
+                else
+                    break;
+            }
+        }
+        return maxSum;
+    }
+}  */
+ 
+/* Optimised: Store the sum max till now, if we get negative value sum will be less, then start new SubArray
 So sum=max of (prev sum+A[i] and A[i]) --> to store subarray sum
 maxSum --> to keep track of max sum
 TC: O(n) SC: O(1)
