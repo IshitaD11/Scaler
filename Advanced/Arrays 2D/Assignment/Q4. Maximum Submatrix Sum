@@ -1,0 +1,87 @@
+/* Q4. Maximum Submatrix Sum
+
+Problem Description
+Given a row-wise and column-wise sorted matrix A of size N * M.
+Return the maximum non-empty submatrix sum of this matrix.
+
+
+Problem Constraints
+1 <= N, M <= 1000
+-109 <= A[i][j] <= 109
+
+
+Input Format
+The first argument is a 2D integer array A.
+
+
+Output Format
+Return a single integer that is the maximum non-empty submatrix sum of this matrix.
+
+
+Example Input
+Input 1:-
+    -5 -4 -3
+A = -1  2  3
+     2  2  4
+Input 2:-
+    1 2 3
+A = 4 5 6
+    7 8 9
+
+
+Example Output
+Output 1:-
+12
+Output 2:-
+45
+
+
+Example Explanation
+Expanation 1:-
+The submatrix with max sum is 
+-1 2 3
+ 2 2 4
+ Sum is 12.
+Explanation 2:-
+The largest submatrix with max sum is 
+1 2 3
+4 5 6
+7 8 9
+The sum is 45. */
+
+public class Solution {
+    public long solve(int[][] A) {
+
+        int n=A.length;
+        int m=A[0].length;
+        long[][] pf=new long[n][m];
+        long maxSum=A[n-1][m-1];
+
+        // as matrix is sorted, A[n-1][m-1] will always be included in maximum submtrix sum
+        // create the suffix sum matrix, and each position value will be sum of submatrix with TL as A[i][j] and BR A[n-1][m-1]
+        for(int i=n-1;i>=0;i--)
+        {
+            for(int j=m-1;j>=0;j--)
+            {
+                if(j==(m-1))
+                    pf[i][j]=A[i][j];
+                else
+                    pf[i][j]=A[i][j]+pf[i][j+1];
+                maxSum=Math.max(maxSum,pf[i][j]);
+            }
+        }
+        for(int j=m-1;j>=0;j--)
+        {
+            for(int i=n-1;i>=0;i--)
+            {
+                if(i==(n-1))
+                    pf[i][j]=pf[i][j];
+                else
+                    pf[i][j]=pf[i][j]+pf[i+1][j];
+                maxSum=Math.max(maxSum,pf[i][j]);
+            }
+        }
+        // System.out.println(Arrays.deepToString(pf));
+       return maxSum;
+    }
+}
