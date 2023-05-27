@@ -1,0 +1,128 @@
+/* Q1. Maximum Sum Square SubMatrix
+
+Problem Description
+Given a 2D integer matrix A of size N x N, find a B x B submatrix where B<= N and B>= 1, such that the sum of all the elements in the submatrix is maximum.
+
+
+
+Problem Constraints
+1 <= N <= 103.
+
+1 <= B <= N
+
+-102 <= A[i][j] <= 102.
+
+
+
+Input Format
+First arguement is an 2D integer matrix A.
+
+Second argument is an integer B.
+
+
+
+Output Format
+Return a single integer denoting the maximum sum of submatrix of size B x B.
+
+
+
+Example Input
+Input 1:
+
+ A = [
+        [1, 1, 1, 1, 1]
+        [2, 2, 2, 2, 2]
+        [3, 8, 6, 7, 3]
+        [4, 4, 4, 4, 4]
+        [5, 5, 5, 5, 5]
+     ]
+ B = 3
+Input 2:
+
+ A = [
+        [2, 2]
+        [2, 2]
+    ]
+ B = 2
+
+
+Example Output
+Output 1:
+
+ 48
+Output 2:
+
+ 8
+
+
+Example Explanation
+Explanation 1:
+
+    Maximum sum 3 x 3 matrix is
+    8 6 7
+    4 4 4
+    5 5 5
+    Sum = 48
+Explanation 2:
+
+ Maximum sum 2 x 2 matrix is
+  2 2
+  2 2
+  Sum = 8 */
+  
+/*Brute Force to get all sub array sum: check each and submatrix. Need combination of all 4 points, TL,TR,BL,BR --> 4 loops.
+Then 2 loops to iterate within the 4 points and take sum. TC: O(n^6) 
+
+Optimised: Take prefix sum. Then starting for each TL(a0,a1), calculate BR(a1,b1).
+a1=a0+B-1; b1=b0+B-1; >> then we can find sum in constant time
+*/
+
+public class Solution {
+    public int solve(int[][] A, int B) {
+
+        int n=A.length;
+        int[][] pf = new int[n][n];
+
+        // construct prefix array
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<n;j++)
+            {
+                if(j==0)
+                    pf[i][j]=A[i][j];
+                else
+                    pf[i][j]=A[i][j]+pf[i][j-1];
+            }
+        }
+
+        for(int j=0;j<n;j++)
+        {
+            for(int i=0;i<n;i++)
+            {
+                if(i==0)
+                    pf[i][j]=pf[i][j];
+                else
+                    pf[i][j]=pf[i][j]+pf[i-1][j];
+                
+            }
+        }
+
+        // 2 nested loops for all possible Top left corner (a0,b0)
+        // for end a0 can go upto n-B position, after that a1 will overflow 
+        int maxSum=Integer.MIN_VALUE;
+        for(int a0=0;a0<=n-B;a0++)
+        {
+            for(int b0=0;b0<=n-B;b0++)
+            {
+                int a1=a0+B-1;
+                int b1=b0+B-1;
+                int sum = pf[a1][b1];
+                if(a0>0) sum-=pf[a0-1][b1];
+                if(b0>0) sum-=pf[a1][b0-1];
+                if(a0>0 && b0>0) sum+=pf[a0-1][b0-1];
+                maxSum=Math.max(maxSum,sum);
+            }
+        }
+        return maxSum;
+    }
+}
