@@ -1,0 +1,90 @@
+/* Q2. Maximum AND Pair
+
+Problem Description
+Given an array A. For every pair of indices i and j (i != j), find the maximum A[i] & A[j].
+
+
+Problem Constraints
+1 <= len(A) <= 105
+1 <= A[i] <= 109
+
+
+Input Format
+The first argument is an integer array A.
+
+
+Output Format
+Return a single integer that is the maximum A[i] & A[j].
+
+
+Example Input
+Input 1:-
+A = [53, 39, 88]
+Input 2:-
+A = [38, 44, 84, 12] 
+
+
+Example Output
+Output 1:-
+37
+Output 2:-
+36
+
+
+Example Explanation
+Explanation 1:-
+53 & 39 = 37
+39 & 88 = 0
+53 & 88 = 16
+Maximum among all these pairs is 37
+Explanation 2:-
+Maximum bitwise and among all pairs is (38, 44) = 36 */
+
+/*example: {21, 18, 24, 17} check the no of set bit from MSB, if count of set bit is >=2, then pair is possible. 
+need to consider those in answer pair, where the bit is set, to get maximum value pair. 
+Make the elements as 0, if the ith bit is unset, so it is not considered in next bit we check.
+If count bof set bit is 1, then do not exclude any elements, as we can not make pair (two set bit is not available)
+
+bits 43210
+26 = 11010
+13 = 01101 x -->as 4th bit is unset, will not consider it for next bit
+23 = 10111 x -->as 3rd bit is unset
+28 = 11100 
+ ==> 32110 --->count of set bit
+
+If count of set bit at ith position is >=2 then, we have a pair >> ans A[i] & A[j] that particular bit will also have 1
+if count is <2 then, assume 1 element having set bit, and another element having unset bit in pair >> Ans A[i] & A[j] particualar bit will be 0
+*/
+
+public class Solution {
+    public int solve(int[] A) {
+        int n=A.length;
+        int cnt=0;
+        int ans=0;
+
+        // get the each psoitions bit count for all the array element starting from MSB
+        for(int i=31;i>=0;i--)
+        {
+            cnt=0;
+            for(int j=0;j<n;j++)
+            {
+                if(((A[j]>>i)&1)==1)
+                    cnt++;
+            }
+
+            // check count of set bit and discard element and construct answer accordingly
+            if(cnt>=2)
+            {
+                ans = ans | (1<<i); //construct answer
+
+                // discard unset ith bit elements
+                for(int j=0;j<n;j++)
+                {
+                    if(((A[j]>>i)&1)!=1)
+                        A[j]=0;
+                }
+            }
+        }
+        return ans;
+    }
+}
