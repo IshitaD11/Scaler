@@ -1,0 +1,112 @@
+/* Q3. SUBARRAY OR
+
+Problem Description
+You are given an array of integers A of size N.
+
+The value of a subarray is defined as BITWISE OR of all elements in it.
+
+Return the sum of value of all subarrays of A % 109 + 7.
+
+
+
+Problem Constraints
+1 <= N <= 105
+
+1 <= A[i] <= 108
+
+
+
+Input Format
+The first argument given is the integer array A.
+
+
+
+Output Format
+Return the sum of Value of all subarrays of A % 109 + 7.
+
+
+
+Example Input
+Input 1:
+
+ A = [1, 2, 3, 4, 5]
+Input 2:
+
+ A = [7, 8, 9, 10]
+
+
+Example Output
+Output 1:
+
+ 71
+Output 2:
+
+ 110
+
+
+Example Explanation
+Explanation 1:
+
+ Value([1]) = 1
+ Value([1, 2]) = 3
+ Value([1, 2, 3]) = 3
+ Value([1, 2, 3, 4]) = 7
+ Value([1, 2, 3, 4, 5]) = 7
+ Value([2]) = 2
+ Value([2, 3]) = 3
+ Value([2, 3, 4]) = 7
+ Value([2, 3, 4, 5]) = 7
+ Value([3]) = 3
+ Value([3, 4]) = 7
+ Value([3, 4, 5]) = 7
+ Value([4]) = 4
+ Value([4, 5]) = 5
+ Value([5]) = 5
+ Sum of all these values = 71
+Explanation 2:
+
+ Sum of value of all subarray is 110.  */
+ 
+ /*To get 1 in the subarray OR ans, we need any one of the number bit to be 1. If all elements bit is 0 then the OR will also be 0
+How many total subarrays present = n*(n-1)/2
+Then for each bit position, check the number of continueous unset bit, These unsetbit will make subarrays within themselves, and those subarrays will have ith bit as unset.
+So subtract the unset bit subarrays, from the total subarrays.
+To construct ans = ans + (count of subarrays where ith bit is set * 2^i)
+*/
+
+public class Solution {
+    public int solve(int[] A) {
+        
+        int mod = 1000000007;
+        long count = 0;
+        long totalCnt=0;
+        long n=A.length;
+        long ans=0;
+        long total = (n)*(n+1)/2;
+        long contri=0;
+        int bitPos=1;
+
+        for(int i=0;i<32;i++)
+        {
+            count=0;totalCnt=0;
+            for(int j=0;j<A.length;j++)
+            {
+                if(((A[j]>>i)&1)==0)
+                    count++;
+                else
+                {
+                    totalCnt+=(count*(count+1))/2;
+                    count=0;
+                }    
+            }
+            if(count>0)
+                totalCnt+=(count*(count+1))/2;
+
+            contri =(total-totalCnt);
+
+            ans = (ans + (contri*bitPos)%mod)%mod;
+            bitPos*=2;
+        }
+        return (int) ans;
+    }
+}
