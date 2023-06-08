@@ -1,0 +1,75 @@
+/* Q3. Find All Primes
+
+Problem Description
+Given an integer A. Find the list of all prime numbers in the range [1, A].
+
+
+Problem Constraints
+1 <= A <= 106
+
+
+
+Input Format
+Only argument A is an integer.
+
+
+
+Output Format
+Return a sorted array of prime number in the range [1, A].
+
+
+
+Example Input
+Input 1:
+A = 7
+Input 2:
+A = 12
+
+
+Example Output
+Output 1:
+[2, 3, 5, 7]
+Output 2:
+[2, 3, 5, 7, 11]
+
+
+Example Explanation
+For Input 1:
+The prime numbers from 1 to 7 are 2, 3, 5 and 7.
+For Input 2:
+The prime numbers from 1 to 12 are 2, 3, 5, 7 and 11. */
+
+public class Solution {
+    public int[] solve(int A) {
+        
+        boolean[] sieve = new boolean[A+1]; //to store all the numbers prime or not
+        Arrays.fill(sieve,true);
+
+        // not primes
+        sieve[0]=false;
+        sieve[1]=false;
+
+        // starting from 2, remove all numbers multiples
+        for(int i = 2; i*i <= A ; i++)
+        {
+            if(sieve[i]==true)
+            {
+                for(int j=i*i;j<=A;j=j+i)
+                {
+                    sieve[j]=false;
+                }
+            }
+        }
+
+        ArrayList<Integer> primes = new ArrayList<Integer>();
+
+        for(int i=0;i<sieve.length;i++)
+        {
+            if(sieve[i]==true)
+                primes.add(i);
+        }
+
+        return primes.stream().mapToInt(Integer::intValue).toArray();
+
+    }
+}
