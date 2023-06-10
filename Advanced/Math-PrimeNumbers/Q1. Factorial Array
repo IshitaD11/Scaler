@@ -1,0 +1,126 @@
+/* Q1. Factorial Array
+
+Problem Description
+Groot has an array A of size N. However, seeking excitement, Groot embarked on constructing an equally-sized array B with a unique definition for each of its elements:
+
+B[i] = factorial of A[i] for every i such that 1<= i <= N.
+
+Now Groot is interested in the total number of non-empty subsequences of array B such that every element in the subsequence has the same non-empty set of prime factors.
+
+Since the number can be huge, return it modulo 109 + 7.
+
+NOTE:
+
+Factorial of a number X denotes (1 x 2 x 3 x 4......(X-1) x (X)).
+A set is a data structure having only distinct elements. E.g : the set of prime factors of Y=12 will be {2,3} and not {2,2,3}
+
+
+Problem Constraints
+1 <= N <= 105
+1 <= A[i] <= 106
+
+
+
+Input Format
+Only argument is an integer array A of size N.
+
+
+
+Output Format
+Return an integer deonting the total number of non-empty subsequences of array B such that every element in the subsequence has the same set of prime factors modulo 109+7.
+
+
+
+Example Input
+Input 1:
+
+ A = [2, 3, 2, 3]
+Input 2:
+
+ A = [2, 3, 4]
+
+
+Example Output
+Output 1:
+
+ 6
+Output 2:
+
+ 4
+
+
+Example Explanation
+Explanation 1:
+
+ Array B will be : [2, 6, 2, 6]
+ The total possible subsequences are 6 : [2], [2], [2, 2], [6], [6], [6, 6].
+Explanation 2:
+
+ Array B will be : [2, 6, 24]
+ The total possible subsequences are 4 : [2], [6], [24], [6, 24]. */
+ 
+ /*We cannot calculate each factorial here, as it will be very large
+for numbers x to y if there are any prime numbers, then only prime factors of the y factorial will be more than x
+Suppose x=6, y =7 ==> factor(x!)=2*3*5 and factor(y!)=2*3*5*7 ==> as from 6 to 7 there is another prime no 7, so count of prime factor increase
+Here we can take count prime as count prefix sum, if prime, increase +1 */
+
+public class Solution {
+    public int solve(int[] A) {
+        int n=A.length;
+        // find the max number to create the isPrime array 
+        int maxNum = A[0];
+        for(int i=1;i<n;i++)
+        {
+            maxNum=Math.max(maxNum,A[i]);
+        }
+
+        // create the isPrime array, from 0 to maxNum, store true if prime else store false
+        Boolean[] isPrime = new Boolean[maxNum+1];
+        Arrays.fill(isPrime,true);
+        isPrime[0]=false;
+        isPrime[1]=false;
+        for(int i=2;i*i<=maxNum;i++)
+        {
+            if(isPrime[i]==true)
+            {
+                for(int j=i*i;j<=maxNum;j=j+i)
+                {
+                    isPrime[j]=false;
+                }
+            }
+        }
+
+        int[] cntFactor = new int[maxNum+1];
+        for(int i=2;i<=maxNum;i++)
+        {
+            if(isPrime[i])
+            {
+                cntFactor[i]=cntFactor[i-1]+1;
+            }
+            else
+                cntFactor[i]=cntFactor[i-1];
+        }
+
+        // to get the subsequence of same set of prime factors, we store the counts in an hashSet
+        HashMap<Integer,Integer> ElementFactorCntMap = new HashMap<Integer,Integer>();
+        for(int i=0;i<n;i++)
+        {
+            int ithFactorCnt = cntFactor[A[i]];
+            if(ithFactorCnt<1) //for element 0,1, skipping them, as they have 0 prime factors
+                continue;
+            ElementFactorCntMap.put(ithFactorCnt,ElementFactorCntMap.getOrDefault(ithFactorCnt,0)+1);
+        }
+
+        // iterate over the ElementFactorCntMap to cnt the subsequences
+        long subCnt = 0;
+        long mod = 1000000007;
+        for(int key:ElementFactorCntMap.keySet())
+        {
+            // System.out.println("key"+key);
+            // System.out.println("val"+ElementFactorCntMap.get(key));
+            int factCnt = ElementFactorCntMap.get(key);
+            subCnt = (subCnt+(long)(Math.pow(2,factCnt)-1)%mod)%mod; //Count of subsequnces = 2^n-1
+        }
+        return (int)subCnt;
+    }
+}
