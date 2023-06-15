@@ -1,0 +1,114 @@
+/* Q2. Minimum Absolute Difference
+
+Problem Description
+Given an array of integers A, find and return the minimum value of | A [ i ] - A [ j ] | where i != j and |x| denotes the absolute value of x.
+
+
+
+Problem Constraints
+2 <= length of the array <= 100000
+
+-109 <= A[i] <= 109
+
+
+
+Input Format
+The only argument given is the integer array A.
+
+
+
+Output Format
+Return the minimum value of | A[i] - A[j] |.
+
+
+
+Example Input
+Input 1:
+
+ A = [1, 2, 3, 4, 5]
+Input 2:
+
+ A = [5, 17, 100, 11]
+
+
+Example Output
+Output 1:
+
+ 1
+Output 2:
+
+ 6
+
+
+Example Explanation
+Explanation 1:
+
+ The absolute difference between any two adjacent elements is 1, which is the minimum value.
+Explanation 2:
+
+ The minimum value is 6 (|11 - 5| or |17 - 11|). */
+ 
+ public class Solution {
+    
+    public int solve(int[] A) {
+        // merge sort array A
+        mergeSort(A,0,A.length-1);
+        int minDiff = Integer.MAX_VALUE;
+
+        // compare i & i-1 element of the sorted array
+        for(int i=1;i<A.length;i++)
+        {
+            int currDiff = A[i]-A[i-1];
+            minDiff=Math.min(currDiff,minDiff);
+        }
+        return minDiff;
+    }
+
+    public void mergeSort(int[] array, int start, int end)
+    {
+        // end condition
+        if(start==end)
+            return;
+
+        int mid = (start+end)/2;
+
+        mergeSort(array,start,mid);
+        mergeSort(array,mid+1,end);
+        mergeArray(array, start, mid,end);
+    }
+
+    public void mergeArray(int[] array, int start,int mid, int end)
+    {
+        int[] mergedArr = new int[end-start+1];
+
+        int p1=start;
+        int p2=mid+1;
+        int mergedArrIdx=0;
+
+        while(p1<=mid && p2<=end)
+        {
+            if(array[p1]<array[p2])
+            {
+                mergedArr[mergedArrIdx++]=array[p1++];
+            }
+            else
+                mergedArr[mergedArrIdx++]=array[p2++];
+        }
+
+        while(p1<=mid)
+        {
+            mergedArr[mergedArrIdx++]=array[p1++];
+        }
+
+        while(p2<=end)
+        {
+            mergedArr[mergedArrIdx++]=array[p2++];
+        }
+
+        // put back the mergedArray to original array in start to end index range
+        for(int i=start;i<=end;i++)
+        {
+            array[i]=mergedArr[i-start];
+        }
+    }
+}
