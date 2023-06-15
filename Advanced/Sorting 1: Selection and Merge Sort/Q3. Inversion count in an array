@@ -1,0 +1,117 @@
+/* Q3. Inversion count in an array
+
+Problem Description
+Given an array of integers A. If i < j and A[i] > A[j], then the pair (i, j) is called an inversion of A. Find the total number of inversions of A modulo (109 + 7).
+
+
+
+Problem Constraints
+1 <= length of the array <= 105
+
+1 <= A[i] <= 109
+
+
+
+Input Format
+The only argument given is the integer array A.
+
+
+
+Output Format
+Return the number of inversions of A modulo (109 + 7).
+
+
+
+Example Input
+Input 1:
+
+A = [1, 3, 2]
+Input 2:
+
+A = [3, 4, 1, 2]
+
+
+Example Output
+Output 1:
+
+1
+Output 2:
+
+4
+
+
+Example Explanation
+Explanation 1:
+
+The pair (1, 2) is an inversion as 1 < 2 and A[1] > A[2]
+Explanation 2:
+
+The pair (0, 2) is an inversion as 0 < 2 and A[0] > A[2]
+The pair (0, 3) is an inversion as 0 < 3 and A[0] > A[3]
+The pair (1, 2) is an inversion as 1 < 2 and A[1] > A[2]
+The pair (1, 3) is an inversion as 1 < 3 and A[1] > A[3] */
+
+
+public class Solution {
+    long mod = 1000000007;
+    long sum = 0;
+
+    public int solve(int[] A) {
+        inersionCnt(A,0,A.length-1);
+
+        return (int)(sum%mod);
+    }
+
+    public void inersionCnt(int[] array,int start , int end)
+    {
+        if(start==end)
+            return;
+        
+        int mid = (start+end)/2;
+
+        inersionCnt(array,start,mid);
+        inersionCnt(array,mid+1,end);
+
+        mergeTwo(array,start,mid,end);
+
+    }
+
+    public void mergeTwo(int[] arr,int start, int mid, int end)
+    {
+        int[] mergedarr = new int[end-start+1];
+
+        int p1=start;
+        int p2=mid+1;
+        int mergedArrIdx=0;
+
+        while(p1<=mid && p2<=end)
+        {
+            if(arr[p1]<=arr[p2])
+            {
+                mergedarr[mergedArrIdx++]=arr[p1];
+                p1++;
+            }
+            else
+            {
+                sum += ((long)mid-(long)p1+1)%mod;
+                mergedarr[mergedArrIdx++]=arr[p2];
+                p2++;
+            }   
+        }
+
+        while(p1<=mid)
+        {
+            mergedarr[mergedArrIdx++]=arr[p1++];
+        }
+
+        while(p2<=end)
+        {
+            mergedarr[mergedArrIdx++]=arr[p2++];
+        }
+
+        for(int i=start;i<=end;i++)
+        {
+            arr[i]=mergedarr[i-start];
+        }
+    }
+}
