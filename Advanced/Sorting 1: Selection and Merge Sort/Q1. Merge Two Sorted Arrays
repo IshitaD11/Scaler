@@ -1,0 +1,91 @@
+/* Q1. Merge Two Sorted Arrays
+
+Problem Description
+Given two sorted integer arrays A and B, merge B and A as one sorted array and return it as an output.
+
+
+Problem Constraints
+-1010 <= A[i], B[i] <= 1010
+
+
+Input Format
+First Argument is a 1-D array representing  A.
+Second Argument is also a 1-D array representing B.
+
+
+Output Format
+Return a 1-D vector which you got after merging A and B.
+
+
+Example Input
+Input 1:
+
+A = [4, 7, 9]
+B = [2, 11, 19]
+Input 2:
+
+A = [1]
+B = [2]
+
+
+Example Output
+Output 1:
+
+[2, 4, 7, 9, 11, 19]
+Output 2:
+
+[1, 2]
+
+
+Example Explanation
+Explanation 1:
+
+Merging A and B produces the output as described above.
+Explanation 2:
+
+ Merging A and B produces the output as described above. */
+
+public class Solution {
+    // DO NOT MODIFY THE ARGUMENTS WITH "final" PREFIX. IT IS READ ONLY
+    public int[] solve(final int[] A, final int[] B) {
+        int lenA=A.length;
+        int lenB=B.length;
+
+        int[] merged = new int[lenA+lenB];
+
+        int indxA=0;
+        int indxB=0;
+        int indxM=0;
+        // traverse the arrays while we have elements at both the arrays
+        while(indxA<lenA && indxB<lenB)
+        {
+            if(A[indxA]<B[indxB])
+            {
+                merged[indxM]=A[indxA];
+                indxM++;
+                indxA++;
+            }
+            else
+            {
+                merged[indxM]=B[indxB];
+                indxM++;
+                indxB++;
+            }
+        }
+
+        // check if elements are remaining in A or B and add them
+        while(indxA<lenA)
+        {
+            merged[indxM]=A[indxA];
+                indxM++;
+                indxA++;
+        }
+        while(indxB<lenB)
+        {
+            merged[indxM]=B[indxB];
+            indxM++;
+            indxB++;
+        }
+        return merged;
+    }
+}
