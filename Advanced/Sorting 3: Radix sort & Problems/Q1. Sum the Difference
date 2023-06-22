@@ -1,0 +1,109 @@
+/* Q1. Sum the Difference
+
+Problem Description
+Given an integer array, A of size N.
+You have to find all possible non-empty subsequences of the array of numbers and then,
+for each subsequence, find the difference between the largest and smallest number in that subsequence.
+Then add up all the differences to get the number.
+
+As the number may be large, output the number modulo 1e9 + 7 (1000000007).
+
+NOTE: Subsequence can be non-contiguous.
+
+
+
+Problem Constraints
+1 <= N <= 10000
+
+1<= A[i] <=1000
+
+
+
+Input Format
+First argument is an integer array A.
+
+
+
+Output Format
+Return an integer denoting the output.
+
+
+
+Example Input
+Input 1:
+
+A = [1, 2] 
+Input 2:
+
+A = [3, 5, 10]
+
+
+Example Output
+Output 1:
+
+ 1 
+Output 2:
+
+ 21
+
+
+Example Explanation
+Explanation 1:
+
+All possible non-empty subsets are:
+[1]     largest-smallest = 1 - 1 = 0
+[2]     largest-smallest = 2 - 2 = 0
+[1, 2]  largest-smallest = 2 - 1 = 1
+Sum of the differences = 0 + 0 + 1 = 1
+So, the resultant number is 1 
+Explanation 2:
+
+All possible non-empty subsets are:
+[3]         largest-smallest = 3 - 3 = 0
+[5]         largest-smallest = 5 - 5 = 0
+[10]        largest-smallest = 10 - 10 = 0
+[3, 5]      largest-smallest = 5 - 3 = 2
+[3, 10]     largest-smallest = 10 - 3 = 7
+[5, 10]     largest-smallest = 10 - 5 = 5
+[3, 5, 10]  largest-smallest = 10 - 3 = 7
+Sum of the differences = 0 + 0 + 0 + 2 + 7 + 5 + 7 = 21
+So, the resultant number is 21  */
+
+/*Contribution of each number as min value and as max value. (max occurance - min occurance)*number will be each occurance
+ar[] = 1 3 4 6
+for 4 --> how many subsequnce it will be max => count of left elements = 2 --> subsequences = 2^2
+      --> how many subsequnce it will be min => count of right elements = 1 --> subsequences = 2^1
+ */
+
+public class Solution {
+    public int solve(int[] A) {
+
+        Arrays.sort(A);
+        int len=A.length;
+        long maxOccurance = 1;
+        long mod = 1000000007;
+        long minOccurance = powerMod(2L,(long)(len-1),mod);
+        
+        long sum =0;
+        for(int i=0;i<len;i++)
+        {
+            long contribution = (A[i] * (maxOccurance-minOccurance + mod)%mod)%mod;
+            sum = (sum + contribution)%mod;
+            maxOccurance=(maxOccurance*2)%mod;
+            minOccurance=(minOccurance*powerMod(2L,(mod-2),mod))%mod;
+        }
+        return (int)sum;
+    }
+
+    public long powerMod(long num, long pow, long mod)
+    {
+        if(pow==0)
+            return 1;
+        
+        long halfpow = powerMod(num,pow/2,mod);
+        if(pow%2!=0)
+            return ((halfpow*halfpow)%mod*num)%mod;
+        else
+            return (halfpow*halfpow)%mod;
+    }
+}
