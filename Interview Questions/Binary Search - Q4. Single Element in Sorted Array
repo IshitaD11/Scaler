@@ -1,0 +1,99 @@
+/* Q4. Single Element in Sorted Array
+
+Problem Description
+Given a sorted array of integers A where every element appears twice except for one element which appears once, find and return this single element that appears only once.
+
+Elements which are appearing twice are adjacent to each other.
+
+NOTE: Users are expected to solve this in O(log(N)) time.
+
+
+
+Problem Constraints
+1 <= |A| <= 100000
+
+1 <= A[i] <= 10^9
+
+
+
+Input Format
+The only argument given is the integer array A.
+
+
+
+Output Format
+Return the single element that appears only once.
+
+
+
+Example Input
+Input 1:
+
+A = [1, 1, 7]
+Input 2:
+
+A = [2, 3, 3]
+
+
+Example Output
+Output 1:
+
+ 7
+Output 2:
+
+ 2
+
+
+Example Explanation
+Explanation 1:
+
+ 7 appears once
+Explanation 2:
+
+ 2 appears once */
+
+/* As the duplicate elements are adjacent to each other, we can consider their indexes. left index and right index.
+A[] = 2 2 4 4 6 7 7 9 9 
+idx = 0 1 2 3 4 5 6 7 8
+
+Notice the duplicate elements left of A[4]=6, the leftIdx is even and rightIdx is odd
+and right of A[4]=6, the leftIdx is odd and rightIdx is even
+Using this concept we can use binary search, need to identify mid is at left side of unique element 
+or right side of unique element */
+
+public class Solution {
+    public int solve(int[] A) {
+        int len=A.length;
+        
+        // edge cases, length = 1
+        if(len==1)
+            return A[0];
+        // edge case, A[0] or A[len-1] is the unique element
+        if(A[0]!=A[1])
+            return A[0];
+        if(A[len-1]!=A[len-2])
+            return A[len-1];
+
+        // Binary search the remaining array
+        int st=1;
+        int en=len-2;
+        int mid=0;
+        while(st<=en)
+        {
+            mid=st+(en-st)/2;
+            if(A[mid]!=A[mid+1] && A[mid]!=A[mid-1])
+                return A[mid];
+            // if mid is at rightIdx of duplicate, take it to the leftIdx of duplicate. 
+            // So that we can always check the leftIdx of duplicate is even or odd
+            if(A[mid-1]==A[mid])
+                mid=mid-1;
+
+            if(mid%2==0) //even, so need to move to right, mid+2 as mid+1 is already my duplicate element
+                st=mid+2;
+            else
+                en=mid-1;
+
+        }
+        return mid;
+    }
+}
