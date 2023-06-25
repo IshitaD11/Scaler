@@ -1,0 +1,155 @@
+/* Nuts and Bolts Problem
+
+https://practice.geeksforgeeks.org/problems/nuts-and-bolts-problem0431/1?utm_source=gfg&utm_medium=article&utm_campaign=bottom_sticky_on_article
+
+Given a set of N nuts of different sizes and N bolts of different sizes. There is a one-one mapping between nuts and bolts. Match nuts and bolts efficiently.
+
+Comparison of a nut to another nut or a bolt to another bolt is not allowed. It means nut can only be compared with bolt and bolt can only be compared with nut to see which one is bigger/smaller.
+The elements should follow the following order ! # $ % & * @ ^ ~ .
+
+Example 1:
+
+Input: 
+N = 5
+nuts[] = {@, %, $, #, ^}
+bolts[] = {%, @, #, $ ^}
+Output: 
+# $ % @ ^
+# $ % @ ^
+Example 2:
+
+Input: 
+N = 9
+nuts[] = {^, &, %, @, #, *, $, ~, !}
+bolts[] = {~, #, @, %, &, *, $ ,^, !}
+Output: 
+! # $ % & * @ ^ ~
+! # $ % & * @ ^ ~
+Your Task:  
+You don't need to read input or print anything. Your task is to complete the function matchPairs() which takes an array of characters nuts[], bolts[] and n as parameters and returns void. You need to change the array itself.
+
+Expected Time Complexity: O(NlogN)
+Expected Auxiliary Space: O(1)
+
+Constraints:
+1 <= N <= 9
+Array of Nuts/Bolts can only consist of the following elements:{'@', '#', '$', '%', '^', '&', '~', '*', '!'}. */
+
+//{ Driver Code Starts
+//Initial Template for Java
+
+
+
+import java.util.*;
+import java.io.*;
+
+public class Main {
+
+    public static void main(String[] args) throws Exception {
+        BufferedReader br = new BufferedReader(new InputStreamReader(System.in));
+        int tc = Integer.parseInt(br.readLine().trim());
+        while (tc-- > 0) {
+            String[] inputLine;
+            int n = Integer.parseInt(br.readLine().trim());
+            char[] nuts = new char[n], bolts = new char[n];
+            inputLine = br.readLine().trim().split(" ");
+            for (int i = 0; i < n; i++) {
+                nuts[i] = (inputLine[i].charAt(0));
+            }
+            inputLine = br.readLine().trim().split(" ");
+            for (int i = 0; i < n; i++) {
+                bolts[i] = (inputLine[i].charAt(0));
+            }
+
+            new Solution().matchPairs(nuts, bolts, n);
+            for (int i = 0; i < n; i++) {
+                System.out.print(nuts[i] + " ");
+            }
+            System.out.println();
+            for (int i = 0; i < n; i++) {
+                System.out.print(bolts[i] + " ");
+            }
+            System.out.println();
+        }
+    }
+}
+
+// } Driver Code Ends
+
+
+//User function Template for Java
+
+
+// consider a pivot element and partition the nuts and bolts by it, and arrange putting less than pivot to left
+class Solution {
+    public static void matchPairs(char[] nuts, char[] bolts, int n) {
+            // code here
+            quickSort(nuts,bolts,0,(n-1));
+        }
+
+    public static void quickSort(char[] nuts,char[] bolts,int start,int end)
+    {
+//        System.out.println("start"+start);
+//        System.out.println("end"+end);
+            if(start>=end)
+                return;
+            int pivotIdx = partitionByPivot(nuts,bolts,start,end);
+
+            // split the arrays by pivotIdx and again do quick sort on the two parts
+            quickSort(nuts,bolts,start,pivotIdx-1);
+
+            quickSort(nuts,bolts,pivotIdx+1,end);
+        }
+
+    public static int partitionByPivot(char[] nuts,char[] bolts, int start,int end)
+        {
+
+            // take pivot element from nuts, and compare with bolts
+            int pIdx = end;
+            char pivot=nuts[pIdx];
+            int lowIdx = start;
+//            System.out.println("pivot"+pivot);
+            for(int i=start;i<end;i++)
+            {
+                if(bolts[i]<pivot) {
+                    swap(bolts, lowIdx, i);
+                    lowIdx++;
+                    // System.out.println("lowIdx"+lowIdx);
+                }
+                if(bolts[i]==pivot)
+                {
+                    swap(bolts, i, pIdx);
+                    i--;
+                }
+            }
+            swap(bolts,lowIdx,pIdx);
+
+            //put the pivot index of nuts in place
+//            swap(nuts,end,lowIdx);
+
+            // using the same index of bolts as pivot, compare with nuts
+//            pIdx=;
+            pivot = bolts[lowIdx];
+            lowIdx=start;
+
+//            System.out.println("pivot"+pivot);
+
+            for(int i=start;i<end;i++)
+            {
+                if(nuts[i]<pivot) {
+                    swap(nuts, lowIdx, i);
+                    lowIdx++;
+                }
+            }
+            swap(nuts,lowIdx,pIdx);
+//            System.out.println("nuts:"+Arrays.toString(nuts));
+//            System.out.println("bolts:"+Arrays.toString(bolts));
+            return lowIdx;
+        }
+
+    public static void swap(char[] arr,int idx1,int idx2) {
+            char temp = arr[idx1];
+            arr[idx1] = arr[idx2];
+            arr[idx2] = temp;
+        }
+}
