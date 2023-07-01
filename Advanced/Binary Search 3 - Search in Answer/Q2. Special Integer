@@ -1,0 +1,110 @@
+/* Q2. Special Integer
+
+Problem Description
+Given an array of integers A and an integer B, find and return the maximum value K such that there is no subarray in A of size K with the sum of elements greater than B.
+
+
+
+Problem Constraints
+1 <= |A| <= 100000
+1 <= A[i] <= 10^9
+
+1 <= B <= 10^9
+
+
+
+Input Format
+The first argument given is the integer array A.
+
+The second argument given is integer B.
+
+
+
+Output Format
+Return the maximum value of K (sub array length).
+
+
+
+Example Input
+Input 1:
+
+A = [1, 2, 3, 4, 5]
+B = 10
+Input 2:
+
+A = [5, 17, 100, 11]
+B = 130
+
+
+Example Output
+Output 1:
+
+ 2
+Output 2:
+
+ 3
+
+
+Example Explanation
+Explanation 1:
+
+For K = 5, There are subarrays [1, 2, 3, 4, 5] which has a sum > B
+For K = 4, There are subarrays [1, 2, 3, 4], [2, 3, 4, 5] which has a sum > B
+For K = 3, There is a subarray [3, 4, 5] which has a sum > B
+For K = 2, There were no subarray which has a sum > B.
+Constraints are satisfied for maximal value of 2.
+Explanation 2:
+
+For K = 4, There are subarrays [5, 17, 100, 11] which has a sum > B
+For K = 3, There were no subarray which has a sum > B.
+Constraints are satisfied for maximal value of 3. */
+
+public class Solution {
+    public int solve(int[] A, int B) {
+        // search space: Min sub array length = 1 and maximum sub array length = n
+        // target >> check if sub of elements in the subarray of length K is < B
+        // if sub array length K is a possible solution then need to increase the subarray length to find the max length
+        // else reduce the sub array length, until sub of all subarray elements < B
+        int low=1;
+        int high=A.length;
+        int maxLen = 0;
+
+        while(low<=high)
+        {
+            int mid = low + (high-low)/2;
+            if(isPossibleSubArrayLength(A,mid,B))
+            {
+                maxLen=mid;
+                low=mid+1;
+            }
+            else
+            {
+                high=mid-1;
+            }
+        }
+        return maxLen;
+    }
+    public boolean isPossibleSubArrayLength(int[] A, int subArrLen, int AllowedSumOfEle)
+    {
+        long subArrSum = 0;
+        // slide window to get sum: first window
+        for(int i=0;i<subArrLen;i++)
+        {
+            subArrSum+=A[i];
+            if(subArrSum>AllowedSumOfEle)
+                return false;
+        }
+        // slide window
+        int start=1;
+        int end=subArrLen;
+        while(end<A.length)
+        {
+            subArrSum=subArrSum-A[start-1];
+            subArrSum=subArrSum+A[end];
+            if(subArrSum>AllowedSumOfEle)
+                return false;
+            start++;end++;
+        }
+        return true;
+    }
+}
