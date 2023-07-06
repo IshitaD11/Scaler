@@ -1,0 +1,126 @@
+/* Q3. Flip and Find Nearest
+
+Problem Description
+Given a binary string A of size N. There are Q queries given by the 2-D array B of size Q x 2.
+
+Each query has 2 integers :-
+
+First integer denotes the type of query. Type of query can be either 1 or 2.
+Second integer denotes index x.
+If type = 1, Flip the value at index x.
+
+If type = 2, Find the index of the nearest 1 to the left or right of index x in the array. If there are multiple indices has the same distance from x, return the index with the lower value. If there is no occurrence of 1 in the array, return -1.
+
+Note :
+We use 1-based indexing
+
+
+
+Problem Constraints
+1 <= N <= 105
+
+1 <= Q <= 105
+
+1 <= B[i][0] <= 2
+
+1 <= B[i][1] <= N
+
+
+
+Input Format
+First argument A is a string.
+
+Second argument B is a 2D array of integers describing the queries.
+
+
+
+Output Format
+Return an array of integers denoting the answers to each query of type 2.
+
+
+
+Example Input
+Input 1:
+A = "10010"
+B = [[1, 2]
+     [2, 3]]
+Input 2:
+A = "010000100"
+B = [[2, 5]
+     [1, 7]
+     [2, 9]]
+
+
+Example Output
+Output 1:
+[2]
+Output 2:
+[7, 2]
+
+
+Example Explanation
+For Input 1:
+After first query, A = "11010".
+For second query, X = 3. Both index 2 and index 4 are at the same 
+distance but we choose the lower index.
+For Input 2:
+For first query, the index 2 is at a distance 3 and index 7 is at a distance 2. So we choose
+index 7.
+After second query, A = "010000000"
+For third query, the only index with '1' is 2. */
+
+/*as we need to find the nearest 1, we can store the 1s only in a TreeSet, where index will be the index of main array
+As treeMap is ordered, check i-1 and i+1 index, whichever is lower is the answer
+TreeMap search/insert time is O(logn)
+We can not use hashMap here, as hashMap is not ordered, all indexes would be shuffled, we would need O(n) to check all indexex*/
+
+public class Solution {
+    public int[] solve(String A, int[][] B) {
+        TreeSet<Integer> set = new TreeSet<Integer>();
+
+        // read A string and store in map as index where element is 1, if element goes to 0, remove it from map. 
+        // There are two possibility, either 0 or 1. So HashSet is used
+        for(int i=0;i<A.length();i++)
+        {
+            if(A.charAt(i)=='1')
+                set.add(i+1); //for 1 based index  
+        }
+        ArrayList<Integer> ansList = new ArrayList<Integer>();
+        // read the query and do action as per type of query
+        for(int i=0;i<B.length;i++)
+        {
+            if(B[i][0]==1)
+            {
+                int idx = B[i][1]; //for 1 based index
+                if(set.contains(idx))
+                    set.remove(idx);  //toggle--> 1 to 0 --> if exists in map remove
+                else
+                    set.add(idx); //toggle 0 to 1 --> if not exists then add in map  
+            }
+            else
+            {
+                int idx = B[i][1];
+                int leftDist = Integer.MAX_VALUE;
+                int rightIDist = Integer.MAX_VALUE;
+                
+                // get floor to get the distance at the left
+                if(set.floor(idx)!=null)
+                    leftDist = idx - set.floor(idx);
+
+                // get ceil to get the distance at the left
+                if(set.ceiling(idx)!=null)
+                    rightIDist = set.ceiling(idx)-idx;
+                
+                if(leftDist==(Integer.MAX_VALUE) && rightIDist == (Integer.MAX_VALUE))
+                    ansList.add(-1);
+                
+                else if(rightIDist<leftDist)
+                    ansList.add(set.ceiling(idx));
+                else
+                    ansList.add(set.floor(idx));
+            }
+        }
+        int[] ansArr = ansList.stream().mapToInt(Integer::intValue).toArray();
+        return ansArr;
+    }
+}
