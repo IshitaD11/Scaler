@@ -1,0 +1,87 @@
+/* Q1. Rabin Karp
+
+Problem Description
+Given two string A and B of length N and M respectively consisting of lowercase letters. Find the number of occurrences of B in A.
+
+
+Problem Constraints
+1 <= M <= N <= 105
+
+
+
+Input Format
+Two argument A and B are strings
+
+
+Output Format
+Return an integer denoting the number of occurrences of B in A
+
+
+Example Input
+Input 1:
+A = "acbac"
+B = "ac"
+Input 2:
+A = "aaaa"
+B = "aa"
+
+
+Example Output
+Output 1:
+2
+Output 2:
+3
+
+
+Example Explanation
+For Input 1:
+The string "ac" occurs twice in "acbac".
+For Input 2:
+The string "aa" occurs thrice in "aaaa". */
+
+public class Solution {
+    public int solve(String A, String B) {
+        long p=1;
+        long mod = 1000000007;
+        int lenB=B.length();
+        long hsB=0;
+        long hsA=0;
+        int count=0;
+        // System.out.println("lenA"+A.length());
+        // System.out.println("lenB"+lenB);
+
+        // hash function for B and first window of A
+        for(int i=lenB-1;i>=0;i--)
+        {
+            hsB= (hsB+((long)(B.charAt(i)-'a'+1)*p)%mod)%mod;
+            hsA= (hsA+((long)(A.charAt(i)-'a'+1)*p)%mod)%mod;
+
+            if(i>0)
+                p=(p*29)%mod;
+        }
+        // System.out.println("p"+p);
+        // System.out.println("hsB"+hsB);
+        // System.out.println("hsA"+hsA);
+        if(hsB==hsA)
+            count++;
+
+        // 
+       
+        int st=1;
+        int en=lenB;
+        while(en<A.length())
+        {
+            // System.out.println("p"+p);
+            // System.out.println("str"+A.substring(st,en+1));
+            long prev = ((long)(A.charAt(st-1)-'a'+1)*p)%mod;
+            long next = (long)(A.charAt(en)-'a'+1);
+            hsA=((((hsA-prev+mod)%mod)*29)%mod+next)%mod;
+            // System.out.println("hsA"+hsA);
+            if(hsB==hsA)
+                count++;
+            st++;
+            en++;
+        }
+        return count;
+    }
+}
