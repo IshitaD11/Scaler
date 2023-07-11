@@ -1,0 +1,126 @@
+/* Q2. Window String
+
+Problem Description
+Given a string A and a string B, find the window with minimum length in A, which will contain all the characters in B in linear time complexity.
+Note that when the count of a character c in B is x, then the count of c in the minimum window in A should be at least x.
+
+Note:
+
+If there is no such window in A that covers all characters in B, return the empty string.
+If there are multiple such windows, return the first occurring minimum window ( with minimum start index and length )
+
+
+Problem Constraints
+1 <= size(A), size(B) <= 106
+
+
+
+Input Format
+The first argument is a string A.
+The second argument is a string B.
+
+
+
+Output Format
+Return a string denoting the minimum window.
+
+
+
+Example Input
+Input 1:
+
+ A = "ADOBECODEBANC"
+ B = "ABC"
+Input 2:
+
+ A = "Aa91b"
+ B = "ab"
+
+
+Example Output
+Output 1:
+
+ "BANC"
+Output 2:
+
+ "a91b"
+
+
+Example Explanation
+Explanation 1:
+
+ "BANC" is a substring of A which contains all characters of B.
+Explanation 2:
+
+ "a91b" is the substring of A which contains all characters of B. */
+
+public class Solution {
+    public String minWindow(String A, String B) {
+        int lenA=A.length();
+        int lenB=B.length();
+        int[] pfA = new int[128];
+        int[] pfB = new int[128];
+        String ans="";
+
+        if(lenB>lenA)
+            return ans;
+
+        // create freq array for B and first window of A
+        for(int i=0;i<lenB;i++)
+        {
+            pfB[B.charAt(i)]++;
+            pfA[A.charAt(i)]++;
+        }
+
+        if(isEqualFreq(pfA,pfB))
+            return A.substring(0,lenB);
+        
+        int low=0;
+        int high=lenB-1;
+        int leftP = -1;
+        int rightP = -1;
+        int minLen = Integer.MAX_VALUE;
+
+        // slide the window using two pointer, when pfA and pfB not equal keep increasing high pointer.
+        // once pfA and pfB are equal increase low pointer to decrease the subaray length
+
+        while(high<lenA)
+        {
+            if(isEqualFreq(pfA,pfB))
+            {
+                int curLen = (high-low+1);
+                if(minLen>curLen)
+                {
+                    leftP=low;
+                    rightP=high;
+                    minLen=curLen;
+                }
+                pfA[A.charAt(low)]--;
+                low++;
+            }
+            else
+            {
+                high++;
+                if(high==lenA)
+                    break;
+                pfA[A.charAt(high)]++;
+            }
+        }
+        
+        if(leftP!=-1 && rightP!=-1)
+            ans = A.substring(leftP,rightP+1);
+        return ans;
+    }
+    public boolean isEqualFreq(int[] A, int[] src)
+    {
+        for(int i=0;i<src.length;i++)
+        {
+            if(src[i]>0)
+            {
+                if(A[i]<src[i])
+                    return false;
+            }
+        }
+        return true;
+    }
+}
