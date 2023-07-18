@@ -1,0 +1,143 @@
+/* Q4. Sort List
+
+Problem Description
+Sort a linked list, A in O(n log n) time.
+
+
+
+Problem Constraints
+0 <= |A| = 105
+
+
+
+Input Format
+The first and the only arugment of input contains a pointer to the head of the linked list, A.
+
+
+
+Output Format
+Return a pointer to the head of the sorted linked list.
+
+
+
+Example Input
+Input 1:
+
+A = [3, 4, 2, 8]
+Input 2:
+
+A = [1]
+
+
+Example Output
+Output 1:
+
+[2, 3, 4, 8]
+Output 2:
+
+[1]
+
+
+Example Explanation
+Explanation 1:
+
+ The sorted form of [3, 4, 2, 8] is [2, 3, 4, 8].
+Explanation 2:
+
+ The sorted form of [1] is [1]. */
+
+/**
+ * Definition for singly-linked list.
+ * class ListNode {
+ *     public int val;
+ *     public ListNode next;
+ *     ListNode(int x) { val = x; next = null; }
+ * }
+ */
+
+/*Sort using merge sort: Divide into two parts, head to mid and mid+1 to end. sort each part and merge two sorted LL
+continue to divide until only 1 node left*/
+
+public class Solution {
+    public ListNode sortList(ListNode A) {
+        // breaking condition
+        if(A==null || A.next==null)
+            return A;
+
+        ListNode mid = findMidLL(A);
+        ListNode head2 = mid.next;
+        mid.next=null;
+
+        ListNode newHead1 = sortList(A);
+        ListNode newHead2 = sortList(head2);
+
+        ListNode mergedHead = mergeTwoSortedLL(newHead1,newHead2);
+        return mergedHead;
+    }
+
+    public ListNode findMidLL(ListNode head)
+    {
+        ListNode fast=head;
+        ListNode slow=head;
+        ListNode prevslow = null;
+
+        while(fast!=null && fast.next!=null)
+        {
+            prevslow=slow;
+            fast=fast.next.next;
+            slow=slow.next;
+        }
+        return prevslow;
+    }
+
+    public ListNode mergeTwoSortedLL(ListNode head1,ListNode head2)
+    {
+        ListNode newHead = null;
+
+        if(head1==null)
+            return head2;
+
+        if(head2==null)
+            return head1;
+
+        if(head1.val<head2.val)
+        {
+            newHead=head1;
+            head1=head1.next;
+        }
+        else
+        {
+            newHead=head2;
+            head2=head2.next;
+        }
+
+        ListNode temp = newHead;
+
+        while(head1!=null && head2!=null)
+        {
+            if(head1.val<head2.val)
+            {
+                temp.next=head1;
+                head1=head1.next;
+            }
+            else
+            {
+                temp.next=head2;
+                head2=head2.next;
+            }
+            temp=temp.next;
+        }
+
+        if(head1!=null)
+        {
+            temp.next=head1;
+        }
+
+        if(head2!=null)
+        {
+            temp.next=head2;
+        }
+
+        return newHead;
+    }
+}
