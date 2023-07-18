@@ -1,0 +1,127 @@
+/* Q2. Reorder List
+
+Problem Description
+Given a singly linked list A
+
+ A: A0 → A1 → … → An-1 → An 
+reorder it to:
+
+ A0 → An → A1 → An-1 → A2 → An-2 → … 
+You must do this in-place without altering the nodes' values.
+
+
+
+Problem Constraints
+1 <= |A| <= 106
+
+
+
+Input Format
+The first and the only argument of input contains a pointer to the head of the linked list A.
+
+
+
+Output Format
+Return a pointer to the head of the modified linked list.
+
+
+
+Example Input
+Input 1:
+
+ A = [1, 2, 3, 4, 5] 
+Input 2:
+
+ A = [1, 2, 3, 4] 
+
+
+Example Output
+Output 1:
+
+ [1, 5, 2, 4, 3] 
+Output 2:
+
+ [1, 4, 2, 3] 
+
+
+Example Explanation
+Explanation 1:
+
+ The array will be arranged to [A0, An, A1, An-1, A2].
+Explanation 2:
+
+ The array will be arranged to [A0, An, A1, An-1, A2]. */
+
+/**
+ * Definition for singly-linked list.
+ * class ListNode {
+ *     public int val;
+ *     public ListNode next;
+ *     ListNode(int x) { val = x; next = null; }
+ * }
+ */
+
+/*Find mid, break and reverse the right side LL. we have 2 LL now, start with LL1, LL1.next=LL2, LL2.next=LL1 and so on*/
+public class Solution {
+    public ListNode reorderList(ListNode A) {
+        
+        if(A.next==null)
+           return A;
+
+        // find mid
+        ListNode fast=A;
+        ListNode slow=A;
+        ListNode mid=null;
+        while(fast!=null && fast.next!=null)
+        {
+            mid=slow;
+            slow=slow.next;
+            fast=fast.next.next;
+        }
+
+        // reverse mid+1 nodes
+        ListNode prev=null;
+        ListNode curr=mid.next;
+        ListNode next=null;
+
+        // break left LL
+        mid.next=null;
+
+        while(curr!=null)
+        {
+            next=curr.next;
+            curr.next=prev;
+            prev=curr;
+            curr=next;
+        }
+
+        // print(prev);
+        // print(A);
+
+        ListNode head1=A;
+        ListNode head2=prev;
+        ListNode temp = head1;
+        head1=head1.next;
+
+        while(head1!=null && head2!=null)
+        {
+            temp.next=head2;
+            head2=head2.next;
+            temp=temp.next;
+            temp.next=head1;
+            head1=head1.next;
+            temp=temp.next;
+        }
+        temp.next=head2;
+        return A;
+    }
+    public void print(ListNode A)
+    {
+        while(A!=null)
+        {
+            System.out.print(A.val+"->");
+             A=A.next;
+        }  
+        System.out.println(""); 
+    }
+}
