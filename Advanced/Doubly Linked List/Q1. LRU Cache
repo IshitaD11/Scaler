@@ -1,0 +1,118 @@
+/* Q1. LRU Cache
+
+Design and implement a data structure for Least Recently Used (LRU) cache. It should support the following operations: get and set.
+
+get(key) - Get the value (will always be positive) of the key if the key exists in the cache, otherwise return -1.
+set(key, value) - Set or insert the value if the key is not already present. When the cache reaches its capacity, it should invalidate the least recently used item before inserting the new item.
+The LRUCache will be initialized with an integer corresponding to its capacity. Capacity indicates the maximum number of unique keys it can hold at a time.
+
+Definition of "least recently used" : An access to an item is defined as a get or a set operation of the item. "Least recently used" item is the one with the oldest access time.
+
+NOTE: If you are using any global variables, make sure to clear them in the constructor.
+
+Example :
+
+Input : 
+         capacity = 2
+         set(1, 10)
+         set(5, 12)
+         get(5)        returns 12
+         get(1)        returns 10
+         get(10)       returns -1
+         set(6, 14)    this pushes out key = 5 as LRU is full. 
+         get(5)        returns -1  */
+
+
+public class Solution {
+
+     // Doubly Linked List definition
+    public class DLLNode{
+        int val;
+        int key;
+        DLLNode prev;
+        DLLNode next;
+        DLLNode(int key,int val)
+        {
+            this.key=key;
+            this.val=val;
+            prev=null;
+            next=null;
+        }
+    }
+   
+    // global variables
+    HashMap<Integer,DLLNode> map;
+    DLLNode head;
+    DLLNode tail;
+    int size;
+    
+    public Solution(int capacity) {
+        head=new DLLNode(-1,0);
+        tail=new DLLNode(-1,0);
+        head.next=tail;
+        tail.prev=head;
+        map=new HashMap<Integer,DLLNode>();
+        size=capacity;
+    }
+    
+    public int get(int key) {
+        // get the node from hashMap, delete the old node, create new node and add at the end
+        int value = -1;
+        if(map.containsKey(key))
+        {
+            DLLNode node = map.get(key);
+            value = node.val;
+            deleteNode(node);
+            // insert new node at the end
+            DLLNode newNode = new DLLNode(key,value);
+            insertEnd(newNode);
+            map.put(key,newNode);
+        }
+        return value;
+    }
+    
+    public void set(int key, int value) {
+        // if key already exists, delete the already exists 1, create new node and insert at the end, also update the node in hashmao
+        DLLNode node=null;
+        if(map.containsKey(key))
+        {
+            node = map.get(key);
+            deleteNode(node);
+        }
+        // if key not exists, check size, if size>capacity, delete first node. then add new node to the end.
+        else
+        {
+            if(map.size()==size)
+            {
+                node=head.next; //first node to be deleted
+                deleteNode(node);
+                map.remove(node.key);
+            }
+        }
+        // insert new node at the end
+        DLLNode newNode = new DLLNode(key,value);
+        insertEnd(newNode);
+        map.put(key,newNode);
+    }
+
+    public void deleteNode(DLLNode node)
+    {
+        DLLNode prv = node.prev;
+        DLLNode nxt = node.next;
+        prv.next=nxt;
+        nxt.prev=prv;
+        node.next=null;
+        node.prev=null;
+    }
+
+    // insert just before tail
+    public void insertEnd(DLLNode node)
+    {
+        DLLNode prv=tail.prev;
+        prv.next=node;
+        node.prev=prv;
+        node.next=tail;
+        tail.prev=node;        
+    }
+
+}
