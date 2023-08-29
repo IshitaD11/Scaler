@@ -1,0 +1,124 @@
+/* Q3. Shortest Unique Prefix
+
+Problem Description
+Given a list of N words, find the shortest unique prefix to represent each word in the list.
+
+NOTE: Assume that no word is the prefix of another. In other words, the representation is always possible
+
+
+
+Problem Constraints
+1 <= Sum of length of all words <= 106
+
+
+
+Input Format
+First and only argument is a string array of size N.
+
+
+
+Output Format
+Return a string array B where B[i] denotes the shortest unique prefix to represent the ith word.
+
+
+
+Example Input
+Input 1:
+
+ A = ["zebra", "dog", "duck", "dove"]
+Input 2:
+
+A = ["apple", "ball", "cat"]
+
+
+Example Output
+Output 1:
+
+ ["z", "dog", "du", "dov"]
+Output 2:
+
+ ["a", "b", "c"]
+
+
+Example Explanation
+Explanation 1:
+
+ Shortest unique prefix of each word is:
+ For word "zebra", we can only use "z" as "z" is not any prefix of any other word given.
+ For word "dog", we have to use "dog" as "d" and "do" are prefixes of "dov".
+ For word "du", we have to use "du" as "d" is prefix of "dov" and "dog".
+ For word "dov", we have to use "dov" as "d" and do" are prefixes of "dog".  
+ 
+Explanation 2:
+
+ "a", "b" and c" are not prefixes of any other word. So, we can use of first letter of each to represent. */
+
+public class Solution {
+    // create trie and store freqency of the visit of each char
+    public class Trie{
+        char val;
+        boolean isLast;
+        Trie[] children;
+        int freq;
+        Trie(char ch)
+        {
+            val=ch;
+            isLast=false;
+            children=new Trie[26];
+            freq=1;
+        }
+    }
+
+    // create Trie, increase freq, each time we visit a node
+    public void createTrie(Trie root,String word)
+    {
+        Trie curr=root;
+        for(int i=0;i<word.length();i++)
+        {
+            int idx=word.charAt(i)-'a';
+            if(curr.children[idx]==null)
+            {    
+                curr.children[idx]=new Trie(word.charAt(i));
+                curr=curr.children[idx];
+            }
+            else
+            {
+                curr=curr.children[idx];
+                curr.freq++;
+            }
+        }
+        curr.isLast=true;
+    }
+
+    // traverse the word, and create prefix string, when freq=1 found, return the prefix string
+    public String search(Trie root,String word)
+    {
+        Trie curr=root;
+        StringBuilder sb=new StringBuilder();
+        for(int i=0;i<word.length();i++)
+        {
+            int idx=word.charAt(i)-'a';
+            curr=curr.children[idx];
+            sb.append(word.charAt(i));
+            if(curr.freq==1)
+                break;
+        }
+        return sb.toString();
+    }
+
+    public String[] prefix(String[] A) {
+
+        Trie root=new Trie('1');
+        // create the Trie
+        for(int i=0;i<A.length;i++)
+            createTrie(root,A[i]);
+
+        // traverse the array again, search for the char node where freq=1, ans till that string
+        String[] ans = new String[A.length];
+
+        for(int i=0;i<A.length;i++)
+            ans[i]=search(root,A[i]);
+
+        return ans;
+    }
+}
