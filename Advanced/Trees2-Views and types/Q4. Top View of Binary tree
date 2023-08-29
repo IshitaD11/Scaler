@@ -1,0 +1,121 @@
+/* Q4. Top View of Binary tree
+Problem Description
+Given a binary tree of integers denoted by root A. Return an array of integers representing the top view of the Binary tree.
+
+The top view of a Binary Tree is a set of nodes visible when the tree is visited from the top.
+
+Return the nodes in any order.
+
+
+
+Problem Constraints
+1 <= Number of nodes in binary tree <= 100000
+
+0 <= node values <= 10^9
+
+
+
+Input Format
+First and only argument is head of the binary tree A.
+
+
+
+Output Format
+Return an array, representing the top view of the binary tree.
+
+
+
+Example Input
+Input 1:
+
+ 
+            1
+          /   \
+         2    3
+        / \  / \
+       4   5 6  7
+      /
+     8 
+Input 2:
+
+ 
+            1
+           /  \
+          2    3
+           \
+            4
+             \
+              5
+
+
+Example Output
+Output 1:
+
+ [1, 2, 4, 8, 3, 7]
+Output 2:
+
+ [1, 2, 3]
+
+
+Example Explanation
+Explanation 1:
+
+Top view is described.
+Explanation 2:
+
+Top view is described. */
+
+/**
+ * Definition for binary tree
+ * class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) {
+ *      val = x;
+ *      left=null;
+ *      right=null;
+ *     }
+ * }
+ */
+public class Solution {
+    class Pair{
+        TreeNode node;
+        int pos;
+        Pair(TreeNode nn,int p)
+        {
+            node=nn;
+            pos=p;
+        }
+    }
+    public ArrayList<Integer> solve(TreeNode A) {
+        Queue<Pair> q = new LinkedList<>();
+        HashMap<Integer,Integer> map = new HashMap<>(); //<pos,node.val>
+
+        Pair root = new Pair(A,0);
+        q.add(root);
+        int minPos=0;
+        int maxPos=0;
+
+        while(q.size()>0)
+        {
+            Pair curr = q.poll();
+            minPos=Math.min(minPos,curr.pos);
+            maxPos=Math.max(maxPos,curr.pos);
+            if(!map.containsKey(curr.pos))
+                map.put(curr.pos,curr.node.val);
+            
+            if(curr.node.left!=null)
+                q.add(new Pair(curr.node.left,curr.pos-1));
+
+            if(curr.node.right!=null)
+                q.add(new Pair(curr.node.right,curr.pos+1));
+        }
+
+        ArrayList<Integer> list = new ArrayList<>();
+        for(int i=minPos;i<=maxPos;i++)
+            list.add(map.get(i));
+
+        return list;
+    }
+}
