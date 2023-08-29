@@ -1,0 +1,210 @@
+/* Q2. Auto Complete
+Problem Description
+There is a dictionary A of N words, and ith word has a unique weight Wi.
+
+Another string array B of size M contains the prefixes. For every prefix B[i], output atmost 5 words from the dictionary A that start with the same prefix.
+
+Output the words in decreasing order of their weight.
+
+NOTE: If there is no word that starts with the given prefix output -1.
+
+
+
+Problem Constraints
+1 <= T <= 5
+
+1 <= N <= 20000
+1 <= M <= 10000
+
+1 <= Wi <= 106
+
+1 <= length of any string either in A or B <= 30
+
+
+
+Input Format
+First line is an integer T denoting the number of test cases.
+For each test case,
+
+First line denotes two space seperated integer N and M.
+Second line denotes N space seperated strings denoting the words in dictionary.
+Third line denotes N space seperated integers denoting the weight of each word in the dictionary.
+Fourth line denotes M space seperated integers denoting the prefixes.
+
+
+Output Format
+For every prefix B[i], print the space seperated output on a new line.
+
+NOTE: After every output there should be a space.
+
+
+
+Example Input
+Input 1:
+
+ 1
+ 6 3
+ abcd aecd abaa abef acdcc acbcc
+ 2 1 3 4 6 5
+ ab abc a
+Input 2:
+
+ 1
+ 5 3
+ aaaa aacd abaa abaa aadcc
+ 3 4 1 2 6 
+ aa aba abc
+
+
+Example Output
+Output 1:
+
+ abef abaa abcd 
+ abcd 
+ acdcc acbcc abef abaa abcd 
+Output 2:
+
+ aadcc aacd aaaa 
+ abaa abaa 
+ -1 
+
+
+Example Explanation
+Explanation 1:
+
+ For the prefix "ab" 3 words in the dictionary have same prefix: ("abcd" : 2, "abaa" : 3, "abef" : 4). Ouput them in decreasing order of weight.
+ For the prefix "abc" only 1 word in the dictionary have same prefix: ("abcd" : 2).
+ For the prefix "a" all 6 words in the dictionary have same prefix: ("abcd" : 2, "aecd" : 1, "abaa" : 3, "abef" : 4, "acdcc" : 6, "acbcc" : 5).
+ Since we can output atmost 5 words. Output top 5 weighted words in decreasing order of weight.
+Explanation 2:
+
+ For the prefix "aa" 3 words in the dictionary have same prefix: ("aaaa" : 3, "aacd" : 4, "aadcc" : 6). Ouput them in decreasing order of weight.
+ For the prefix "aba" 2 words in the dictionary have same prefix: ("abaa" : 1, "abaa" : 2).
+ For the prefix "abc" there is no word in the dictionary which have same prefix. So print -1.
+
+*/
+
+import java.lang.*;
+import java.util.*;
+
+//pair to store weightage, Pair array to store all weightage of all words. Pair array should be sorted.
+// Traverse the sorted Pair array and create Trie
+// maintain arrayList in Trie, which stores the top 5 index of Pair. 
+// As Pair array is sorted by weight, once traversal ends for the prefix, based on the arrayList indexes, print the word of Pair[idx]. 
+
+public class Main {
+    public static class Trie{
+        char data;
+        Trie[] children;
+        boolean isLast;
+        ArrayList<Integer> wgtIdx;
+        Trie(char ch)
+        {
+            data=ch;
+            children=new Trie[26];
+            isLast=false;
+            wgtIdx=new ArrayList<Integer>();
+        }
+    }
+
+    public static class Pair{
+        int weight;
+        String word;
+        Pair(int wgt,String wo)
+        {
+            weight=wgt;
+            word=wo;
+        }
+    }
+
+    // build the trie and keep track of top 5 index of words from Pair array sorted by weight
+    public static void insert(Trie root,String word,int indx)
+    {
+        Trie curr=root;
+        for(int i=0;i<word.length();i++)
+        {
+            int d = word.charAt(i)-'a';
+            if(curr.children[d]==null)
+                curr.children[d]=new Trie(word.charAt(i));
+            curr=curr.children[d];
+            if(curr.wgtIdx.size()<5)
+                curr.wgtIdx.add(indx);
+        }
+        curr.isLast=true;
+    }
+
+    // traverse the prefix, when last char found, get the arrayList, data of arrayList=index of Pair array, Using the data from arrayList, print words from pair array
+    public static void searchPrefix(Trie root,String prefix,Pair[] wordWgtPair)
+    {
+        Trie curr=root;
+        for(int i=0;i<prefix.length();i++)
+        {
+            int d = prefix.charAt(i)-'a';
+            if(curr.children[d]==null)
+            {    
+                System.out.println("-1 ");
+                return;
+            }
+            curr=curr.children[d];
+        }
+        // traverse the wgtIdx arraylist of curr
+        for(int i=0;i<curr.wgtIdx.size();i++)
+        {
+            int idx=curr.wgtIdx.get(i);
+            System.out.print(wordWgtPair[idx].word+" ");
+        }
+        System.out.println("");
+    }
+
+    public static void main(String[] args) {
+        // YOUR CODE GOES HERE
+        // Please take input and print output to standard input/output (stdin/stdout)
+        // DO NOT USE ARGUMENTS FOR INPUTS
+        // E.g. 'Scanner' for input & 'System.out' for output
+        Scanner sc=new Scanner(System.in);
+        int testcase = sc.nextInt();
+        for(int j=0;j<testcase;j++)
+        {
+            int wordCnt=sc.nextInt();
+            int prefixCnt=sc.nextInt();
+
+            String[] words = new String[wordCnt];
+            int[] weight = new int[wordCnt];
+
+            for(int i=0;i<wordCnt;i++)
+                words[i]=sc.next();
+            
+            for(int i=0;i<wordCnt;i++)
+                weight[i]=sc.nextInt();
+
+            String[] prefix = new String[prefixCnt];
+            for(int i=0;i<prefixCnt;i++)
+                prefix[i]=sc.next();
+
+            // pair array to store weight word combo and sort the Pair array by weight
+            Pair[] wordWgtPair = new Pair[wordCnt];
+            for(int i=0;i<wordCnt;i++)
+                wordWgtPair[i]=new Pair(weight[i],words[i]);
+
+            // sort pair by weight of words
+            Arrays.sort(wordWgtPair,new Comparator<Pair>(){
+                @Override
+                public int compare(Pair a,Pair b)
+                {    
+                    return b.weight-a.weight;
+                }
+            });
+
+            // pass the sorted array to create Trie, so the ArrayList of top 5 words for prefix till current char hold the sorted data by weight
+            Trie root = new Trie('0');
+            for(int i=0;i<wordCnt;i++)
+                insert(root,wordWgtPair[i].word,i);
+
+            // search the prefix in Trie, get the index arrayList from last char node, get the words using the index from Pair array
+            for(int i=0;i<prefixCnt;i++)
+            {
+                searchPrefix(root,prefix[i],wordWgtPair);
+            }
+        }
+    }
+}
