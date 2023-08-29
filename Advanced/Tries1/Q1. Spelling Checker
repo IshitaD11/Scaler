@@ -1,0 +1,126 @@
+/* Q1. Spelling Checker
+
+Problem Description
+Given an array of words A (dictionary) and another array B (which contain some words).
+
+You have to return the binary array (of length |B|) as the answer where 1 denotes that the word is present in the dictionary and 0 denotes it is not present.
+
+Formally, for each word in B, you need to return 1 if it is present in Dictionary and 0 if not.
+
+Such problems can be seen in real life when we work on any online editor (like Google Documnet), if the word is not valid it is underlined by a red line.
+
+NOTE: Try to do this in O(n) time complexity.
+
+
+
+Problem Constraints
+1 <= |A| <= 1000
+
+1 <= sum of all strings in A <= 50000
+
+1 <= |B| <= 1000
+
+
+
+Input Format
+First argument is array of strings A.
+
+First argument is array of strings B.
+
+
+
+Output Format
+Return the binary array of integers according to the given format.
+
+
+
+Example Input
+Input 1:
+
+A = [ "hat", "cat", "rat" ]
+B = [ "cat", "ball" ]
+Input 2:
+
+A = [ "tape", "bcci" ]
+B = [ "table", "cci" ]
+
+
+Example Output
+Output 1:
+
+[1, 0]
+Output 2:
+
+[0, 0]
+
+
+Example Explanation
+Explanation 1:
+
+Only "cat" is present in the dictionary.
+Explanation 2:
+
+None of the words are present in the dictionary. */
+
+public class Solution {
+    // create Trie class
+    public class Trie
+    {
+        char data;
+        Trie[] children;
+        boolean isLast;
+        Trie(char ch)
+        {
+            data=ch;
+            children=new Trie[26];
+            isLast=false;
+        }
+    }
+    public int[] solve(String[] A, String[] B) {
+
+        Trie root = new Trie('0');
+        // insert each word to trie
+        for(int i=0;i<A.length;i++)
+        {
+            insertTrie(root,A[i]);
+        }
+
+        // search B words inside trie
+        int[] ans = new int[B.length];
+        for(int i=0;i<B.length;i++)
+        {
+            ans[i]=searchTrie(root,B[i]);
+        }
+        return ans;
+    }
+
+    // insert word into Trie TC:O(word length)
+    public void insertTrie(Trie root,String word)
+    {
+        Trie curr=root;
+        for(int i=0;i<word.length();i++)
+        {
+            int idx=word.charAt(i)-'a';
+            if(curr.children[idx]==null)
+                curr.children[idx]=new Trie(word.charAt(i));
+            curr=curr.children[idx];
+        }
+        curr.isLast=true;
+    }
+
+    // search words into Trie TC:O(word.length())
+    public int searchTrie(Trie root,String word)
+    {
+        Trie curr=root;
+        for(int i=0;i<word.length();i++)
+        {
+            int idx=word.charAt(i)-'a';
+            if(curr.children[idx]==null)
+                return 0;
+            curr=curr.children[idx];
+        }
+        if(curr.isLast==true)
+            return 1;
+        return 0;
+    }
+}
