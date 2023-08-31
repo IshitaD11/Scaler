@@ -1,0 +1,127 @@
+/* Q3. Flatten Binary Tree to Linked List
+
+Problem Description
+Given a binary tree A, flatten it to a linked list in-place.
+
+The left child of all nodes should be NULL.
+
+
+
+Problem Constraints
+1 <= size of tree <= 100000
+
+
+
+Input Format
+First and only argument is the head of tree A.
+
+
+
+Output Format
+Return the linked-list after flattening.
+
+
+
+Example Input
+Input 1:
+
+     1
+    / \
+   2   3
+Input 2:
+
+         1
+        / \
+       2   5
+      / \   \
+     3   4   6
+
+
+Example Output
+Output 1:
+
+1
+ \
+  2
+   \
+    3
+Output 2:
+
+1
+ \
+  2
+   \
+    3
+     \
+      4
+       \
+        5
+         \
+          6
+
+
+Example Explanation
+Explanation 1:
+
+ Tree flattening looks like this.
+Explanation 2:
+
+ Tree flattening looks like this. */
+
+/**
+ * Definition for binary tree
+ * class TreeNode {
+ *     int val;
+ *     TreeNode left;
+ *     TreeNode right;
+ *     TreeNode(int x) { val = x; }
+ * }
+ */
+//  maintain 1 sides all node stand and end as head and tail in Pair 
+public class Solution {
+    public class Pair{
+        TreeNode head;
+        TreeNode tail;
+        Pair(TreeNode h,TreeNode t)
+        {
+            head=h;
+            tail=t;
+        }
+    }
+	public TreeNode flatten(TreeNode a) {
+        return flattenByPair(a).head;
+	}
+    public Pair flattenByPair(TreeNode A)
+    {
+        if(A==null)
+            return new Pair(null,null);
+
+        Pair l=flattenByPair(A.left);
+        Pair r=flattenByPair(A.right);
+
+        A.left=null; //break the left side nodes
+
+        // cases1, if left and right both null, return the root node as head and tail
+        if(l.head==null && r.head==null)
+            return new Pair(A,A);
+        // cases2, if left is null, return the root node as head and right tail
+        else if(l.head==null)
+        {
+            A.right=r.head;
+            return new Pair(A,r.tail);
+        }    
+        // cases3, if right is null, bright left to root.right return the root node as head and left tail
+        else if(r.head==null)
+        {
+            A.right=l.head;
+            return new Pair(A,l.tail);
+        }    
+        // cases4, if right & left not null, bright left to root.right, join left tail to right head, return root,r.tail
+        else
+        {
+            A.right=l.head;
+            l.tail.right=r.head;
+            return new Pair(A,r.tail);
+        }
+    }
+}
