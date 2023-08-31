@@ -1,0 +1,145 @@
+/* Q1. Maximum XOR
+
+Problem Description
+Given an array of integers A, find and return the maximum result of A[i] XOR A[j], where i, j are the indexes of the array.
+
+
+
+Problem Constraints
+1 <= length of the array <= 100000
+0 <= A[i] <= 109
+
+
+
+Input Format
+The only argument given is the integer array A.
+
+
+
+Output Format
+Return an integer denoting the maximum result of A[i] XOR A[j].
+
+
+
+Example Input
+Input 1:
+
+ A = [1, 2, 3, 4, 5]
+Input 2:
+
+ A = [5, 17, 100, 11]
+
+
+Example Output
+Output 1:
+
+ 7
+Output 2:
+
+ 117
+
+
+Example Explanation
+Explanation 1:
+
+ Maximum XOR occurs between element of indicies(0-based) 1 and 4 i.e. 2 ^ 5 = 7.
+Explanation 2:
+
+ Maximum XOR occurs between element of indicies(0-based) 1 and 2 i.e. 17 ^ 100 = 117. */
+
+/*Create tree with the Binary bits of the numbers, 
+For each number, will get max XOR if the other number is just opposite bits of main number, 
+try to find the path of all opposite bits, and get the best ans
+if opposite bit found, XOR is 1, add the bit as set bit in XOR ans, else it will be unset in XOR ans 
+Construct the XOR answer as we go through the Trie*/
+
+public class Solution {
+    class Trie{
+        int val;
+        Trie[] children;
+        Trie(int v)
+        {
+            val=v;
+            children=new Trie[2];
+        }
+    }
+    public void createTrie(Trie root,int num,int bitCnt)
+    {
+        Trie curr=root;
+        for(int i=bitCnt-1;i>=0;i--)
+        {
+            int ithBit = ((num>>i)&1);
+            if(curr.children[ithBit]==null)
+            {
+                curr.children[ithBit]=new Trie(ithBit);
+            }
+            curr=curr.children[ithBit];
+        }
+    }
+    public int solve(int[] A) {
+        int n=A.length;
+        // find the max number to get max bit position
+        int maxNum=0;
+        for(int i=0;i<n;i++)
+            maxNum=Math.max(maxNum,A[i]);
+
+        // System.out.println("maxNum"+maxNum);
+
+        // get MSB of maxNum
+        int bitCnt=0;
+        while(maxNum!=0)
+        {
+            maxNum=maxNum>>1;
+            bitCnt++;
+        }
+
+        // System.out.println("bitCnt"+bitCnt);
+
+        // create Trie
+        Trie root = new Trie(-1);
+        for(int i=0;i<n;i++)
+        {
+            createTrie(root,A[i],bitCnt);
+        }
+
+        // System.out.println("root"+root.val);
+
+        // traverse each number, find the best pair to XOR with by travelling the Trie, and get the XOR of the pair
+        int XORofPair=0;
+        int maxXor=0;
+        Trie curr=root;
+        // System.out.println("curr1"+curr.val);
+        for(int i=0;i<n;i++)
+        {
+            curr=root;
+            XORofPair=0;
+            for(int j=bitCnt-1;j>=0;j--)
+            {
+                int jthBit = ((A[i]>>j)&1);
+
+                if(jthBit==1) //jth bit is set for A[i], look for unset bit
+                {
+                    if(curr.children[0]!=null) //unset bit found, make jth bit as set bit in XOR ans
+                    {
+                        XORofPair = (XORofPair | (1<<j));
+                        curr=curr.children[0];
+                    }
+                    else
+                        curr=curr.children[1]; //jth bit will be unset in XOR ans, no need to add
+                }
+                else //jth bit is unset for A[i], look for set bit
+                {
+                    if(curr.children[1]!=null) //set bit found, make jth bit as set bit in XOR ans
+                    {
+                        XORofPair = (XORofPair | (1<<j));
+                        curr=curr.children[1];
+                    }
+                    else
+                        curr=curr.children[0]; //jth bit will be unset in XOR ans, no need to add
+                }
+            }
+            maxXor=Math.max(maxXor,XORofPair);
+        }
+        return maxXor;
+    }
+}
