@@ -1,0 +1,126 @@
+/* Q1. Ways to form Max Heap
+
+Problem Description
+Max Heap is a special kind of complete binary tree in which, for every node, the value present in that node is greater than the value present in its children nodes.
+
+Find the number of distinct Max Heap that can be made from A distinct integers.
+
+In short, you have to ensure the following properties for the max heap :
+
+Heap has to be a complete binary tree ( A complete binary tree is a binary tree in which every level, except possibly the last, is completely filled, and all nodes are as far left as possible.)
+Every node is greater than all its children.
+NOTE: If you want to know more about Heaps, please visit this link. Return your answer modulo 109 + 7.
+
+
+
+Problem Constraints
+1 <= A <= 100
+
+
+
+Input Format
+The first and only argument is an integer A.
+
+
+
+Output Format
+Return an integer denoting the number of distinct Max Heap.
+
+
+
+Example Input
+Input 1:
+
+ A = 4
+Input 2:
+
+ A = 10
+
+
+Example Output
+Output 1:
+
+ 3
+Output 2:
+
+ 3360
+
+
+Example Explanation
+Explanation 1:
+
+ Let us take 1, 2, 3, 4 as our 4 distinct integers
+ Following are the 3 possible max heaps from these 4 numbers :
+      4           4                     4
+    /  \         / \                   / \ 
+   3    2   ,   2   3      and        3   1
+  /            /                     /    
+ 1            1                     2
+Explanation 2:
+
+ Number of distinct heaps possible with 10 distinct integers = 3360. */
+
+/*Steps and observations:
+1. Total nodes A=left Nodes(L)+Right Nodes(R)+1
+2. for CBT -> leftnodes(L)>=Right Nodes(R)
+3. Height of Tree(h) = log(base2)A
+4. Total nodes till 2nd last level => till 2nd last level, each level is fully occupied
+2^0+2^1+2^2+...+2^(h-1) --> applying GP = 2^h - 1
+5. left & right nodes till 2nd last level = (2^h - 1 - 1)/2 --> (total nodes till 2nd last level - root)/2
+6. last level has total 2^h nodes, so at the last level left side has = 2^h/1 if the last level is totally filled
+   else if only left is filles, right is null -> A-(2^h - 1) => total nodes-nodes till 2nd last level
+   minimum of these 2 is the total nodes in last level
+7. Total left nodes = left nodes till 2nd last level + left nodes at last level
+8. to get combinations: there are (A-1) nodes and we have to arrange Total left nodes -> (A-1)C(L)
+9. check the ways left nodes are arranged, and right nodes are arranged
+10. Multiple of --> left nodes arranaged total count of nodes * ways child left node arranged * ways child right node arranged   
+ */
+
+//  TC:O(A^2)
+
+public class Solution {
+    long mod = 1000000007;
+    long[][] pascal;
+    public int solve(int A) {
+        long[][] pascal = new long[A+1][A+1];
+        // System.out.println(Arrays.deepToString(pascal));
+        createPascalTriange(A,pascal); 
+        // System.out.println(Arrays.deepToString(pascal));
+        long ans = ways(A,pascal);
+        return (int)(ans%mod);
+    }
+    public long ways(int A,long[][] pascal)
+    {
+        // edge cases
+        if(A==0)
+            return 1L;
+        if(A==1 || A==2)
+            return 1L;
+        if(A==3)
+            return 2L;
+        int height = (int) (Math.log(A)/Math.log(2)); //log(base2)n
+        int nodesTill2ndLastLevel = (int)Math.pow(2,height)-1; //(2^h)-1
+        int nodeLastLevel = Math.min((A-nodesTill2ndLastLevel),(nodesTill2ndLastLevel+1)/2);
+        int leftNodes = (nodesTill2ndLastLevel-1)/2 + nodeLastLevel; 
+        int rightNodes = A-1-leftNodes;
+        // System.out.println("leftNodes"+leftNodes);
+        // System.out.println("A"+A);
+        long selectLeftNodes = pascal[A-1][leftNodes]; //findNCR((A-1),leftNodes);
+        long l=ways(leftNodes,pascal);
+        long r=ways(rightNodes,pascal);
+        return ((selectLeftNodes*l)%mod*r)%mod;
+    }
+    public void createPascalTriange(int n,long[][] pascal)
+    {
+        pascal[0][0]=1;
+        for(int i=1;i<=n;i++)
+        {
+            pascal[i][0]=1;
+            for(int j=1;j<i;j++)
+            {
+                pascal[i][j]=(pascal[i-1][j-1]+pascal[i-1][j])%mod;
+            }
+            pascal[i][i]=1;
+        }
+    }
+}
