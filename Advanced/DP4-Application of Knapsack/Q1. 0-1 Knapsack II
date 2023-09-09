@@ -1,0 +1,112 @@
+/* Q1. 0-1 Knapsack II
+
+Problem Description
+Given two integer arrays A and B of size N each which represent values and weights associated with N items respectively.
+
+Also given an integer C which represents knapsack capacity.
+
+Find out the maximum value subset of A such that sum of the weights of this subset is smaller than or equal to C.
+
+NOTE: You cannot break an item, either pick the complete item, or don’t pick it (0-1 property).
+
+
+
+Problem Constraints
+1 <= N <= 500
+
+1 <= C, B[i] <= 106
+
+1 <= A[i] <= 50
+
+
+
+Input Format
+First argument is an integer array A of size N denoting the values on N items.
+
+Second argument is an integer array B of size N denoting the weights on N items.
+
+Third argument is an integer C denoting the knapsack capacity.
+
+
+
+Output Format
+Return a single integer denoting the maximum value subset of A such that sum of the weights of this subset is smaller than or equal to C.
+
+
+
+Example Input
+Input 1:
+
+ A = [6, 10, 12]
+ B = [10, 20, 30]
+ C = 50
+Input 2:
+
+ A = [1, 3, 2, 4]
+ B = [12, 13, 15, 19]
+ C = 10
+
+
+Example Output
+Output 1:
+
+ 22
+Output 2:
+
+ 0
+
+
+Example Explanation
+Explanation 1:
+
+ Taking items with weight 20 and 30 will give us the maximum value i.e 10 + 12 = 22
+Explanation 2:
+
+ Knapsack capacity is 10 but each item has weight greater than 10 so no items can be considered in the knapsack therefore answer is 0. */
+
+//01Knapsack TC:O(n*c) = 10^6 * 500 = 5*10^8 --> will get TLE
+// solution, instead of dp[n][c] = max value , use dp[n][maxValue] --> max value=50*500 --> TC:500*500*50 = 2*10^7
+// edge case: for 0 elements/no elements selected, for maxValue 0, we have 0 weight, for other max Value min weight is infinity
+// dp[j] = min weight, where j is maxValue possible for weight dp[j] from the 0 to i elements
+
+public class Solution {
+    public int solve(int[] A, int[] B, int C) {
+        int n=A.length;
+        // get the sum val of all elements, that is the max value we can possibly get
+        int sum=0;
+        for(int i=0;i<n;i++)
+            sum+=A[i];
+
+        // create dp for 0 to sum elements, to identify if dp[i] value possible using 0 to n elements
+        int[] dp = new int[sum+1];
+        Arrays.fill(dp,Integer.MAX_VALUE); //infinity to identify it is not possible to generate dp[i] value. 
+        // Marking as C+1 as it will be more than expected weight, we will be able to calculate min value
+        dp[0]=0; //using 0 elements, we can get sum val as 0
+
+        // iterate over 0 to n elements, no elements selected is already taken care
+        int runSum=0;
+        // System.out.println(Arrays.toString(dp));
+        for(int i=0;i<n;i++)
+        {
+            runSum+=A[i];
+            // maximum value we can obtain is from val[i] to running sum (sum of elements from 0 to i)
+            // need to loop higher to lower, as each element is allowed once. Example, ele=3, running total 9. At 6 it expected 3+3 to be elements. If we go backwords, 3+infity will be infitity at 6
+            for(int j=runSum;j>=A[i];j--)
+            {
+                // get minimum weight possible for j maxValue, if not possible it will be infinity
+                if(dp[j-A[i]]!=Integer.MAX_VALUE)
+                    dp[j] = Math.min(dp[j],B[i]+dp[j-A[i]]);
+            }
+            // if(i>0)
+                // System.out.println(Arrays.toString(dp));
+        } 
+        // System.out.println(Arrays.toString(dp));
+        // find the maximum possible value where weight<=C
+        for(int i=sum;i>=0;i--)
+        {
+            if(dp[i]<=C)
+                return i;
+        }
+        return 0;
+    }
+}
