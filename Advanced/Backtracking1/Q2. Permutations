@@ -1,0 +1,77 @@
+/* Q2. Permutations
+
+Problem Description
+Given an integer array A of size N denoting collection of numbers , return all possible permutations.
+
+NOTE:
+
+No two entries in the permutation sequence should be the same.
+For the purpose of this problem, assume that all the numbers in the collection are unique.
+Return the answer in any order
+WARNING: DO NOT USE LIBRARY FUNCTION FOR GENERATING PERMUTATIONS. 
+Example : next_permutations in C++ / itertools.permutations in python.
+If you do, we will disqualify your submission retroactively and give you penalty points.
+
+
+Problem Constraints
+1 <= N <= 9
+
+
+
+Input Format
+Only argument is an integer array A of size N.
+
+
+
+Output Format
+Return a 2-D array denoting all possible permutation of the array.
+
+
+
+Example Input
+A = [1, 2, 3]
+
+
+Example Output
+[ [1, 2, 3]
+  [1, 3, 2]
+  [2, 1, 3] 
+  [2, 3, 1] 
+  [3, 1, 2] 
+  [3, 2, 1] ]
+
+
+Example Explanation
+All the possible permutation of array [1, 2, 3]. */
+
+//keep an array visited to identify if the number is already visited, and we are not going to add it to the ans
+// TC:O(n!*n) SC:O(n)
+public class Solution {
+    ArrayList<ArrayList<Integer>> ans = new ArrayList<>();
+    public ArrayList<ArrayList<Integer>> permute(ArrayList<Integer> A) {
+        boolean[] visited = new boolean[A.size()];
+        ArrayList<Integer> eachRow = new ArrayList<>();            
+        permutation(A,0,eachRow,visited);
+        return ans;
+    }
+    public void permutation(ArrayList<Integer> A,int idx,ArrayList<Integer> eachRow,boolean[] visited)
+    {
+        if(A.size()==idx)
+        {
+            ans.add(new ArrayList<>(eachRow));
+            return;
+        }    
+
+        for(int i=0;i<A.size();i++)
+        {
+            if(visited[i]==false)
+            {
+                visited[i]=true;
+                eachRow.add(A.get(i));
+                permutation(A,idx+1,eachRow,visited);
+                visited[i]=false;
+                eachRow.remove(idx);
+            }
+        }
+    }
+}
