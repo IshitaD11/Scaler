@@ -1,0 +1,85 @@
+/* Q3. Subsets II
+Problem Description
+Given a collection of integers denoted by array A of size N that might contain duplicates, return all possible subsets.
+
+NOTE:
+
+Elements in a subset must be in non-descending order.
+The solution set must not contain duplicate subsets.
+The subsets must be sorted lexicographically.
+
+
+Problem Constraints
+0 <= N <= 16
+
+
+
+Input Format
+Only argument is an integer array A of size N.
+
+
+
+Output Format
+Return a 2-D vector denoting all the possible subsets.
+
+
+
+Example Input
+Input 1:
+
+ A = [1, 2, 2]
+Input 2:
+
+ A = [1, 1]
+
+
+Example Output
+Output 1:
+
+ [
+    [],
+    [1],
+    [1, 2],
+    [1, 2, 2],
+    [2],
+    [2, 2]
+ ]
+Output 2:
+
+ [
+    [],
+    [1],
+    [1, 1]
+ ]
+
+
+Example Explanation
+Explanation 1:
+
+All the subsets of the array [1, 2, 2] in lexicographically sorted order. */
+
+public class Solution {
+    public ArrayList<ArrayList<Integer>> subsetsWithDup(ArrayList<Integer> A) {
+        Collections.sort(A);
+        ArrayList<ArrayList<Integer>> ans = new ArrayList<>();
+        ArrayList<Integer> each = new ArrayList<>();
+        subset2(A,ans,each,0);
+        return ans;
+    }
+    public void subset2(ArrayList<Integer> arr,ArrayList<ArrayList<Integer>> ans,ArrayList<Integer> each ,int idx)
+    {
+        ans.add(new ArrayList<>(each));
+
+        // if(idx>0 && idx<arr.size() && arr.get(idx)==arr.get(idx-1))
+        //     return;
+
+        for(int i=idx;i<arr.size();i++)
+        {
+            if(i!=idx && i>0 && arr.get(i)==arr.get(i-1))
+                continue;
+            each.add(arr.get(i));
+            subset2(arr,ans,each,i+1);
+            each.remove(each.size()-1);
+        }
+    }
+}
