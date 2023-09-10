@@ -1,0 +1,86 @@
+/* Q3. Word Break
+
+Given a string A and a dictionary of words B, determine if A can be segmented into a space-separated sequence of one or more dictionary words.
+
+Input Format:
+
+The first argument is a string, A.
+The second argument is an array of strings, B.
+Output Format:
+
+Return 0 / 1 ( 0 for false, 1 for true ) for this problem.
+Constraints:
+
+1 <= len(A) <= 6500
+1 <= len(B) <= 10000
+1 <= len(B[i]) <= 20
+Examples:
+
+Input 1:
+    A = "myinterviewtrainer",
+    B = ["trainer", "my", "interview"]
+
+Output 1:
+    1
+
+Explanation 1:
+    Return 1 ( corresponding to true ) because "myinterviewtrainer" can be segmented as "my interview trainer".
+
+Input 2:
+    A = "a"
+    B = ["aaa"]
+
+Output 2:
+    0
+
+Explanation 2:
+    Return 0 ( corresponding to false ) because "a" cannot be segmented as "aaa". */
+
+// need to check each prefix is present in the dataset or not
+// use a hashSet to store the strings
+// As using only backtracking TC:O(n!*n) given TLE, 
+// added DP hashMap to store the remaining string as 1 (Correct String) and else set it to 0 (not correct string)
+// TC:O(n) SC:O(n) --> n subarrays are stored
+
+public class Solution {
+    public int wordBreak(String A, String[] B) {
+        HashSet<String> set=new HashSet<>();
+        for(int i=0;i<B.length;i++)
+        {
+            set.add(B[i]);
+        }
+        HashMap<String,Integer> dpMap = new HashMap<>();
+        return check(set,A,dpMap);
+    }
+    public int check(HashSet<String> set, String word,HashMap<String,Integer> dpMap)
+    {
+        if(word.length()==0)
+            return 1;
+
+        
+        if(dpMap.containsKey(word))
+            return dpMap.get(word);
+        
+        // dpMap.put(word,1);
+        
+        for(int i=1;i<=word.length();i++)
+        {
+            String curr=word.substring(0,i);
+            if(set.contains(curr))
+            {
+                // dpMap.put(curr,1);
+                String rem = word.substring(i,word.length());
+                
+                if(check(set,rem,dpMap)==1)
+                {
+                    dpMap.put(rem,1);   
+                    return 1;
+                }
+                else
+                    dpMap.put(rem,0); //backtrack
+            }
+        }
+        // dpMap.put(word,0);
+        return 0;
+    }
+}
