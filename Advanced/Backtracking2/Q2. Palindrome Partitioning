@@ -1,0 +1,107 @@
+/* Q2. Palindrome Partitioning
+
+Problem Description
+Given a string A, partition A such that every string of the partition is a palindrome.
+
+Return all possible palindrome partitioning of A.
+
+Ordering the results in the answer : Entry i will come before Entry j if :
+len(Entryi[0]) < len(Entryj[0]) OR
+(len(Entryi[0]) == len(Entryj[0]) AND len(Entryi[1]) < len(Entryj[1])) OR * * *
+(len(Entryi[0]) == len(Entryj[0]) AND ... len(Entryi[k] < len(Entryj[k]))
+
+
+Problem Constraints
+1 <= len(A) <= 15
+
+
+
+Input Format
+First argument is a string A of lowercase characters.
+
+
+
+Output Format
+Return a list of all possible palindrome partitioning of s.
+
+
+
+Example Input
+Input 1:
+
+A = "aab"
+Input 2:
+
+A = "a"
+
+
+Example Output
+Output 1:
+
+ [
+    ["a","a","b"]
+    ["aa","b"],
+  ]
+Output 2:
+
+ [
+    ["a"]
+  ]
+
+
+Example Explanation
+Explanation 1:
+
+In the given example, ["a", "a", "b"] comes before ["aa", "b"] because len("a") < len("aa").
+Explanation 2:
+
+In the given example, only partition possible is "a" . */
+
+//create all possible substring and check if it is palindrome or not
+// TC:O(n*2^n) {all possible combinations} SC:O(n)
+
+public class Solution {
+	public ArrayList<ArrayList<String>> partition(String a) {
+        ArrayList<ArrayList<String>> ans= new ArrayList<>();
+        ArrayList<String> row = new ArrayList<>();
+        palindromePartition(a,0,ans,row);
+        return ans;
+	}
+
+    public void palindromePartition(String word,int idx,ArrayList<ArrayList<String>> ans,ArrayList<String> row)
+    {
+        if(idx==word.length())
+        {
+            ans.add(new ArrayList<>(row));
+            return;
+        }
+
+        for(int i=idx+1;i<=word.length();i++)
+        {
+            String sub = word.substring(idx,i);
+            // System.out.println(sub);
+            if(isPalindrome(sub))
+            {
+                row.add(sub);
+                palindromePartition(word,i,ans,row);
+                row.remove(row.size()-1);
+            }
+        }
+    }
+
+    public boolean isPalindrome(String str)
+    {
+        int st=0;
+        int en=str.length()-1;
+        while(st<=en)
+        {
+            if(str.charAt(st)!=str.charAt(en))
+                return false;
+            st++;
+            en--;
+        }
+        // System.out.println("true");
+        return true;
+    }
+    
+}
