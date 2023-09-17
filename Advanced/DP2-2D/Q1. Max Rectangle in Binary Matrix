@@ -1,0 +1,114 @@
+/* Q1. Max Rectangle in Binary Matrix
+
+
+Problem Description
+Given a 2-D binary matrix A of size N x M filled with 0's and 1's, find the largest rectangle containing only ones and return its area.
+
+
+
+Problem Constraints
+1 <= N, M <= 100
+
+
+
+Input Format
+The first argument is a 2-D binary array A.
+
+
+
+Output Format
+Return an integer denoting the area of the largest rectangle containing only ones.
+
+
+
+Example Input
+Input 1:
+
+ A = [
+       [1, 1, 1]
+       [0, 1, 1]
+       [1, 0, 0] 
+     ]
+Input 2:
+
+ A = [
+       [0, 1, 0]
+       [1, 1, 1]
+     ] 
+
+
+Example Output
+Output 1:
+
+ 4
+Output 2:
+
+ 3
+
+
+Example Explanation
+Explanation 1:
+
+ As the max area rectangle is created by the 2x2 rectangle created by (0, 1), (0, 2), (1, 1) and (1, 2).
+Explanation 2:
+
+ As the max area rectangle is created by the 1x3 rectangle created by (1, 0), (1, 1) and (1, 2). */
+
+// dp[i][j] = store prefix sum of the row, to get the width of 1's in that row, if element 0 keep pf sum =0
+// now iterate over each cell, I have the max width till this point, now increase the height from i to 0, 
+// if width of i-1 row is less than current row, then need to take the min(min width till this row,current width)
+
+public class Solution {
+    public int maximalRectangle(int[][] A) {
+        int n=A.length;
+        int m=A[0].length;
+        int[][] dp = new int[n][m];
+        // take width till i,j, if 0 reset
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<m;j++)
+            {
+                if(j==0)
+                    dp[i][j]=A[i][j];
+                else
+                {
+                    if(A[i][j]!=0)
+                        dp[i][j]=dp[i][j-1]+A[i][j];
+                    else
+                        dp[i][j]=0;
+                }
+            }
+        }
+        // System.out.println(Arrays.deepToString(dp));
+
+        // now for every cell consider it as the end cell of the rectangle, try to create rectangle from left and above cells
+        // as dp already stores the max width till jth cell, we need to only move above to find max height
+        // width=min(currnt width,ith row width)
+        int wdth=0;
+        int hgt=0;
+        int maxArea=0;
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<m;j++)
+            {
+                // for 1st row, height =1 and width=dp[i][j]
+                if(i==0)
+                    maxArea = Math.max(maxArea,dp[i][j]);
+                else
+                {
+                    wdth=dp[i][j];
+                    hgt=0;
+                    for(int k=i;k>=0;k--)
+                    {
+                        wdth=Math.min(wdth,dp[k][j]);
+                        hgt++;
+                        if(wdth==0)
+                            break;
+                        maxArea = Math.max(maxArea,(wdth*hgt));
+                    }
+                }
+            }
+        }
+        return maxArea;
+    }
+}
