@@ -1,0 +1,102 @@
+/* Q4. Unique Binary Search Trees II
+
+Problem Description
+Given an integer A, how many structurally unique BST's (binary search trees) exist that can store values 1...A?
+
+
+
+Problem Constraints
+1 <= A <=18
+
+
+
+Input Format
+First and only argument is the integer A
+
+
+
+Output Format
+Return a single integer, the answer to the problem
+
+
+
+Example Input
+Input 1:
+
+ 1
+Input 2:
+
+ 2
+
+
+Example Output
+Output 1:
+
+ 1
+Output 2:
+
+ 2
+
+
+Example Explanation
+Explanation 1:
+
+ Only single node tree is possible.
+Explanation 2:
+
+ 2 trees are possible, one rooted at 1 and other rooted at 2. */
+
+// TC: O(A^2) SC:O(A^2) dp[i][j]=>Unique BST where start val is i and end val is j
+/*public class Solution {
+    public int numTrees(int A) {
+        int[][] dp = new int[A+1][A+1];
+        int ans = uniqueBST(dp,1,A);
+        return ans;
+    }
+
+    public int uniqueBST(int[][] dp,int st,int en)
+    {
+        if(st>=en)
+            return 1;
+        if(dp[st][en]!=0)
+            return dp[st][en];
+
+        int cnt=0;
+        for(int i=st;i<=en;i++)
+        {
+            int lft=uniqueBST(dp,st,i-1);
+            int rgt=uniqueBST(dp,i+1,en);
+            cnt+=lft*rgt;  //each possible left subtree can have each possible right subtree
+        }
+        dp[st][en]=cnt;
+        return dp[st][en];
+    }
+}*/
+
+// Solution for 1D DP --> DP[i] = Possible bst with i elements
+public class Solution {
+    public int numTrees(int A) {
+        int[] dp = new int[A+1];
+        int ans = uniqueBST(dp,A);
+        return ans;
+    }
+    public int uniqueBST(int[] dp,int A)
+    {
+        if(A<=1)
+            return 1;
+        if(dp[A]!=0)
+            return dp[A];
+        // selecting 1 element in this step to be root, then change the left and right BST element count from 0 to A-1
+        int lft=0; //left BST has 0 element
+        int rgt=A-1; //right BST has A-1 element // A is considered as root
+        int ans=0;
+        while(lft<A) //possibility of left elements 1 to A-1
+        {
+            ans+=uniqueBST(dp,lft)*uniqueBST(dp,rgt);
+            lft++;
+            rgt--;
+        }
+        dp[A]=ans;
+        return dp[A];
+    }
+}
