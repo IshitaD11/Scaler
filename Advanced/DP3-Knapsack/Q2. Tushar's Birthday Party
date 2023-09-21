@@ -1,0 +1,136 @@
+/* Q2. Tushar's Birthday Party
+
+Problem Description
+As it is Tushar's Birthday on March 1st, he decided to throw a party to all his friends at TGI Fridays in Pune. Given are the eating capacity of each friend, filling capacity of each dish and cost of each dish. A friend is satisfied if the sum of the filling capacity of dishes he ate is equal to his capacity. Find the minimum cost such that all of Tushar's friends are satisfied (reached their eating capacity).
+
+NOTE:
+
+Each dish is supposed to be eaten by only one person. Sharing is not allowed.
+
+Each friend can take any dish unlimited number of times.
+
+There always exists a dish with filling capacity 1 so that a solution always exists.
+
+
+
+Problem Constraints
+|A| <= 1000
+
+|B| <= 1000
+
+|C| <= 1000
+
+
+
+Input Format
+First Argument is vector A, denoting eating capacities
+
+Second Argument is vector B, denoting filling capacities
+
+Third Argument is vector C, denoting cost
+
+
+
+Output Format
+Return a single integer, the answer to the problem
+
+
+
+Example Input
+Input 1:
+
+A = [2, 4, 6]
+B = [2, 1, 3]
+C = [2, 5, 3]
+Input 2:
+
+A = [2]
+B = [1]
+C = [2]
+
+
+Example Output
+Output 1:
+
+12
+Output 2:
+
+4
+
+
+Example Explanation
+Explanation 1:
+
+First friend takes dish 1, Second friend takes dish 1 twice and third friend takes dish 3 twice.
+So 2 + 2*2 + 3*2 = 12.
+Explanation 2:
+
+Only way is to take 2 dishes of cost 2, hence 4. */
+
+public class Solution {
+    // DO NOT MODIFY THE ARGUMENTS WITH "final" PREFIX. IT IS READ ONLY
+    public int solve(final int[] A, final int[] B, final int[] C) {
+        // apply unbounder knapsack for each person's capacity then sum up the total cost
+        // get the minimum cost to fill the capacity of each person
+
+        int person = A.length;
+        int dish=B.length;
+        int total = 0;
+
+        /*for(int i=0;i<person;i++)
+        {
+            int cap = A[i];
+            int[][] dp = new int[dish+1][cap+1]; //j--> dish , k-->capacity
+
+            Arrays.fill(dp[0],Integer.MAX_VALUE);
+
+            for(int j=1;j<=dish;j++)
+            {
+                for(int k=1;k<=cap;k++)
+                {
+                    int rej=dp[j-1][k];
+                    int sel=Integer.MAX_VALUE;
+                    if(k>=B[j-1])
+                    {
+                        if(dp[j][k-B[j-1]]!=Integer.MAX_VALUE)
+                            sel = C[j-1]+ dp[j][k-B[j-1]];
+                    }
+                    dp[j][k]=Math.min(rej,sel);
+                }
+            }
+            System.out.println("dp"+Arrays.deepToString(dp));
+            total+=dp[dish][cap];
+        }
+        return total;*/
+
+        // observer we can use the same dp, generate it till max capacity and add for each fried using the same dp array from the last row
+        int maxCapacity = 0;
+        for(int i=0;i<person;i++)
+            maxCapacity = Math.max(A[i],maxCapacity);
+
+        // build dp for max capacity and all dishes
+        int[][] dp = new int[dish+1][maxCapacity+1];
+
+        Arrays.fill(dp[0],Integer.MAX_VALUE);
+
+        for(int j=1;j<=dish;j++)
+        {
+            for(int k=1;k<=maxCapacity;k++)
+            {
+                int rej=dp[j-1][k];
+                int sel=Integer.MAX_VALUE;
+                if(k>=B[j-1])
+                {
+                    if(dp[j][k-B[j-1]]!=Integer.MAX_VALUE)
+                        sel = C[j-1]+ dp[j][k-B[j-1]];
+                }
+                dp[j][k]=Math.min(rej,sel);
+            }
+        }
+
+        // add for each person
+        for(int i=0;i<person;i++)
+            total+=dp[dish][A[i]];
+        return total;
+    }
+}
