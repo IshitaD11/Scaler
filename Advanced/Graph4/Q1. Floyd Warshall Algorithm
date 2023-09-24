@@ -1,0 +1,71 @@
+/* Q1. Floyd Warshall Algorithm
+
+Problem Description
+Given a matrix of integers A of size N x N, where A[i][j] represents the weight of directed edge from i to j (i ---> j).
+
+If i == j, A[i][j] = 0, and if there is no directed edge from vertex i to vertex j, A[i][j] = -1.
+
+Return a matrix B of size N x N where B[i][j] = shortest path from vertex i to vertex j.
+
+If there is no possible path from vertex i to vertex j , B[i][j] = -1
+
+Note: Rows are numbered from top to bottom and columns are numbered from left to right.
+
+
+
+Problem Constraints
+1 <= N <= 200
+-1 <= A[i][j] <= 1000000
+
+
+Input Format
+The first and only argument given is the integer matrix A.
+
+
+Output Format
+Return a matrix B of size N x N where B[i][j] = shortest path from vertex i to vertex j
+If there is no possible path from vertex i to vertex j, B[i][j] = -1.
+
+
+Example Input
+A = [ [0 , 50 , 39]
+          [-1 , 0 , 1]
+          [-1 , 10 , 0] ]
+
+
+Example Output
+[ [0 , 49 , 39 ]
+   [-1 , 0 , -1 ]
+   [-1 , 10 , 0 ] ]
+
+
+Example Explanation
+Shortest Path from 1 to 2 would be 1 ---> 3 ---> 2 and not directly from 1 to 2,
+All remaining distances remains same. */
+
+// TC:O(n^3) SC:O(1)
+
+public class Solution {
+    public ArrayList<ArrayList<Integer>> solve(ArrayList<ArrayList<Integer>> A) {
+        
+        int n=A.size();
+        // take each node as intermediate node and try to reduce the path from i to j
+        for(int k=0;k<n;k++)
+        {
+            for(int u=0;u<n;u++)
+            {
+                for(int v=0;v<n;v++)
+                {
+                    // mat[u][v]=mat[u][k]+mat[k][v] //path from u to v = path from u to k and k to v
+                    if(A.get(u).get(k)!=-1 && A.get(k).get(v)!=-1)
+                    {
+                        if( A.get(u).get(v)==(-1) || A.get(u).get(k)+A.get(k).get(v) < A.get(u).get(v))
+                            A.get(u).set(v,A.get(u).get(k)+A.get(k).get(v));
+                    }
+                }
+            }
+        }
+
+        return A;
+    }
+}
