@@ -1,0 +1,154 @@
+/* Q5. Rotten Oranges
+
+Problem Description
+Given a matrix of integers A of size N x M consisting of 0, 1 or 2.
+
+Each cell can have three values:
+
+The value 0 representing an empty cell.
+
+The value 1 representing a fresh orange.
+
+The value 2 representing a rotten orange.
+
+Every minute, any fresh orange that is adjacent (Left, Right, Top, or Bottom) to a rotten orange becomes rotten. Return the minimum number of minutes that must elapse until no cell has a fresh orange. If this is impossible, return -1 instead.
+
+Note: Your solution will run on multiple test cases. If you are using global variables, make sure to clear them.
+
+
+
+Problem Constraints
+1 <= N, M <= 1000
+
+0 <= A[i][j] <= 2
+
+
+
+Input Format
+The first argument given is the integer matrix A.
+
+
+
+Output Format
+Return the minimum number of minutes that must elapse until no cell has a fresh orange.
+
+If this is impossible, return -1 instead.
+
+
+
+Example Input
+Input 1:
+
+A = [   [2, 1, 1]
+        [1, 1, 0]
+        [0, 1, 1]   ]
+Input 2:
+
+ 
+A = [   [2, 1, 1]
+        [0, 1, 1]
+        [1, 0, 1]   ]
+
+
+Example Output
+Output 1:
+
+ 4
+Output 2:
+
+ -1
+
+
+Example Explanation
+Explanation 1:
+
+Minute 0: [ [2, 1, 1]
+            [1, 1, 0]
+            [0, 1, 1] ]
+Minute 1: [ [2, 2, 1]
+            [2, 1, 0]
+            [0, 1, 1] ]
+Minute 2: [ [2, 2, 2]
+            [2, 2, 0]
+            [0, 1, 1] ]
+Minute 3: [ [2, 2, 2]
+            [2, 2, 0]
+            [0, 2, 1] ]
+Minute 4: [ [2, 2, 2]
+            [2, 2, 0]
+            [0, 2, 2] ]
+At Minute 4, all the oranges are rotten.
+Explanation 2:
+
+The fresh orange at 2nd row and 0th column cannot be rotten, So return -1. */
+
+// TC:O(n*m) SC:O(n*m) --> queue space, can have all the nodes inside queue
+
+public class Solution {
+    public class Pair
+    {
+        int row;
+        int col;
+        Pair(int r,int c)
+        {
+            row = r;
+            col = c;
+        }
+    }
+    public int solve(int[][] A) {
+        int n=A.length;
+        int m=A[0].length;
+        int[][] dir = {{1,0},{0,1},{-1,0},{0,-1}};
+        // get all 2's in array and insert in queue
+        Queue<Pair> q=new LinkedList<>();
+
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<m;j++)
+            {
+                if(A[i][j]==2)
+                {
+                    q.add(new Pair(i,j));
+                }
+            }
+        } 
+
+        // bfs of graph: move to all nbrs of curr node in 1 sec
+        int time=0;
+        while(q.size()>0)
+        {
+            int sz=q.size();
+            for(int i=0;i<sz;i++)
+            {
+                Pair curr=q.remove();
+
+                for(int j=0;j<4;j++)
+                {
+                    int x = curr.row + dir[j][0];
+                    int y = curr.col + dir[j][1];
+                    if(x>=0 && y>=0 && x<n && y<m && A[x][y]==1)
+                    {
+                        A[x][y]=2;
+                        q.add(new Pair(x,y));
+                    }
+                }
+            }
+            time++; //it will check till last node, where no more nbrs can be updated, so it will not add anything to q, and the main loop will end
+            // need to reduce time-1 to get correct ans
+        }
+
+        // check no other pending good oranges
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<m;j++)
+            {
+                if(A[i][j]==1)
+                {
+                    return -1;
+                }
+            }
+        } 
+
+        return time-1;
+    }
+}
