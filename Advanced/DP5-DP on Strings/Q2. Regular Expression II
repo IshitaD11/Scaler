@@ -55,3 +55,79 @@ Explanation 2:
  '.' matches any single character. First two character in string A will be match. 
  But the last character i.e 'z' != 'a'. Return 0. */
 
+public class Solution {
+    // DO NOT MODIFY THE ARGUMENTS WITH "final" PREFIX. IT IS READ ONLY
+    public int isMatch(final String A, final String B) {
+        int lenA=A.length();
+        int lenB=B.length();
+        int[][] dp = new int[lenA][lenB];
+        for(int i=0;i<lenA;i++)
+            Arrays.fill(dp[i],-1);
+        return regexp(A,B,lenA-1,lenB-1,dp);
+    }
+    public int regexp(String A,String B,int idxA,int idxB,int[][] dp)
+    {
+        // both strings ended, means we got the match, return 1
+        if(idxA<0 && idxB<0)
+            return 1;
+        
+        // Pattern ended but main string remains, not a match
+        if(idxB<0)
+            return 0;
+
+        // Main string ended, but pattern remains, only allowed pattern is 'a*', * with preceding char, here all the occurance of * can be neglected as it can have 0 matches
+        // when * found, skip 2 places (skipping * and preceding char), if we get any char other than '*', not a valid pattern
+        if(idxA<0)
+        {
+            while(idxB>=0)
+            {
+                if(B.charAt(idxB)=='*')
+                    idxB=idxB-2;
+                else
+                    return 0;
+            }
+            return 1;
+        }
+
+        if(dp[idxA][idxB]!=-1)
+            return dp[idxA][idxB];
+
+        int ans=0;
+
+        // both char matches, check for next positions
+        if(A.charAt(idxA)==B.charAt(idxB))
+            ans = regexp(A,B,idxA-1,idxB-1,dp);
+        else
+        {
+            // '.' --> matches with 1 char, skip current char, and check for next positions
+            if(B.charAt(idxB)=='.')
+                ans = regexp(A,B,idxA-1,idxB-1,dp);
+
+            // '*' --> case 1 ==> 'a*' can have 0 char matching, so skip both 'a*' from pattern, and continue checking
+            else if(B.charAt(idxB)=='*')
+            {
+                int zero = regexp(A,B,idxA,idxB-2,dp);
+                int more = 0;
+
+                if(B.charAt(idxB-1)=='.') 
+                //for case '.*' means '.' is present 0 to n times, since . can be any single char, we have 2 option. eaither match . with 1 char or multiple chars
+                {
+                    // match with 1 char
+                    int one = regexp(A,B,idxA-1,idxB-2,dp);
+                    // match with more char
+                    int multi = regexp(A,B,idxA-1,idxB,dp);
+                    if(one==1 || multi==1)
+                        more = 1;
+                }
+                // if the preceding char matches with A, then skip the A[i] and continue checking for more characters can be matched with the precedant char
+                else if(A.charAt(idxA)==B.charAt(idxB-1))
+                    more = regexp(A,B,idxA-1,idxB,dp);
+
+                if(zero==1 || more==1)
+                    ans=1;
+            }
+        }
+        dp[idxA][idxB]=ans;
+        return dp[idxA][idxB];
+    }
+}
