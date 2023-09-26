@@ -1,0 +1,86 @@
+/* Q2. Longest Common Subsequence
+
+Problem Description
+Given two strings A and B. Find the longest common subsequence ( A sequence which does not need to be contiguous), which is common in both the strings.
+
+You need to return the length of such longest common subsequence.
+
+
+
+Problem Constraints
+1 <= Length of A, B <= 1005
+
+
+
+Input Format
+First argument is a string A.
+Second argument is a string B.
+
+
+
+Output Format
+Return an integer denoting the length of the longest common subsequence.
+
+
+
+Example Input
+Input 1:
+
+ A = "abbcdgf"
+ B = "bbadcgf"
+Input 2:
+
+ A = "aaaaaa"
+ B = "ababab"
+
+
+Example Output
+Output 1:
+
+ 5
+Output 2:
+
+ 3
+
+
+Example Explanation
+Explanation 1:
+
+ The longest common subsequence is "bbcgf", which has a length of 5.
+Explanation 2:
+
+ The longest common subsequence is "aaa", which has a length of 3. */
+
+// TC:O(n*m) SC:O(n*m)
+public class Solution {
+    public int solve(String A, String B) {
+        int[][] dp = new int[A.length()][B.length()];
+        int cnt = lcs(A,B,A.length()-1,B.length()-1,dp);
+        return cnt;
+    }
+    public int lcs(String A,String B, int idxA,int idxB,int[][] dp)
+    {
+        if(idxA<0 || idxB<0)
+        {    
+            return 0;
+        }
+
+        if(dp[idxA][idxB]!=0)
+            return dp[idxA][idxB];
+
+        // if current char of A and B are same, then add +1 to subsequence length and continue checking for LCS
+        if(A.charAt(idxA)==B.charAt(idxB))
+        {    
+            dp[idxA][idxB] = lcs(A,B,idxA-1,idxB-1,dp)+1;
+        }
+        // if both current characters are not same, then try to match A[idxA] with B[idxB-1] and B[idxB] with A[idxA-1]
+        // As we want longest length, take max of these two
+        else 
+        {
+            int cnt1=lcs(A,B,idxA-1,idxB,dp);
+            int cnt2=lcs(A,B,idxA,idxB-1,dp);
+            dp[idxA][idxB] = Math.max(cnt1,cnt2);
+        }
+        return dp[idxA][idxB];
+    }
+}
