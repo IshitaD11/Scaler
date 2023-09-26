@@ -1,0 +1,130 @@
+/* Q3. Regular Expression Match
+
+Problem Description
+Implement wildcard pattern matching with support for ' ? ' and ' * ' for strings A and B.
+
+' ? ' : Matches any single character.
+' * ' : Matches any sequence of characters (including the empty sequence).
+The matching should cover the entire input string (not partial).
+
+
+
+Problem Constraints
+1 <= length(A), length(B) <= 104
+
+
+
+Input Format
+The first argument of input contains a string A.
+The second argument of input contains a string B.
+
+
+
+Output Format
+Return 1 if the patterns match else return 0.
+
+
+
+Example Input
+Input 1:
+
+ A = "aaa"
+ B = "a*"
+Input 2:
+
+ A = "acz"
+ B = "a?a"
+
+
+Example Output
+Output 1:
+
+ 1
+Output 2:
+
+ 0
+
+
+Example Explanation
+Explanation 1:
+
+ Since '*' matches any sequence of characters. Last two 'a' in string A will be match by '*'.
+ So, the pattern matches we return 1.
+Explanation 2:
+
+ '?' matches any single character. First two character in string A will be match. 
+ But the last character i.e 'z' != 'a'. Return 0. */
+
+public class Solution {
+    // DO NOT MODIFY THE ARGUMENTS WITH "final" PREFIX. IT IS READ ONLY
+    public int isMatch(final String A, final String B) {
+
+        StringBuilder sb = new StringBuilder();
+        //removing extra char * if they are side by side in B to avoid java heap space issue for hard test case
+        for(int i=0;i<B.length()-1;i++){
+            if(B.charAt(i)== '*' && B.charAt(i+1) == '*') continue;
+            sb.append(B.charAt(i));
+        }
+        sb.append(B.charAt(B.length()-1));
+        String s = sb.toString();
+
+        int[][] dp = new int[A.length()][s.length()];
+        for(int i=0;i<A.length();i++)
+            Arrays.fill(dp[i],-1);
+
+        return matching(A,s,A.length()-1,s.length()-1,dp);
+    }
+
+    public int matching (String A,String B,int idxA,int idxB,int[][] dp)
+    {
+        // both string exhausted 
+        if(idxA<0 && idxB<0)
+            return 1;
+        
+        // pattern ended but still have some char left is A
+        if(idxB<0)
+            return 0;
+
+        // main string ended but pattern left. If only * present, the it can match with empty string
+        if(idxA<0)
+        {
+            for(int i=0;i<=idxB;i++)
+            {
+                if(B.charAt(i)!='*')
+                    return 0;
+            }
+            return 1;
+        }
+
+        if(dp[idxA][idxB]!=-1)
+            return dp[idxA][idxB];
+        
+        // current char matches check for idxA-1 and idxB-1, remaining string
+        if(A.charAt(idxA)==B.charAt(idxB))
+        {    
+            dp[idxA][idxB] = matching(A,B,idxA-1,idxB-1,dp);
+            return dp[idxA][idxB];
+        }
+        
+        // '?' can match with only 1 char, reduce idx and check for remaining string
+        if(B.charAt(idxB)=='?')
+        {
+            dp[idxA][idxB] = matching(A,B,idxA-1,idxB-1,dp);
+            return dp[idxA][idxB];
+        }
+
+        // for '*', it can match with 0 or multiple chars, 2 ways, match '*' with no chars, match '*' with idxA char and keep matching with idxA-1 chars
+        if(B.charAt(idxB)=='*')
+        {
+            int noChar = matching(A,B,idxA,idxB-1,dp);
+            int multiChar = matching(A,B,idxA-1,idxB,dp); //do no remove '*' keep matching with multiple chars of A
+            if(noChar==1 || multiChar==1)
+                dp[idxA][idxB] = 1;
+            else 
+                dp[idxA][idxB] = 0;
+            return dp[idxA][idxB];
+        }
+        dp[idxA][idxB] = 0;
+        return dp[idxA][idxB];
+    }
+}
