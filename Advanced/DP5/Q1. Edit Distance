@@ -1,0 +1,104 @@
+/* Q1. Edit Distance
+
+Problem Description
+Given two strings A and B, find the minimum number of steps required to convert A to B. (each operation is counted as 1 step.)
+
+You have the following 3 operations permitted on a word:
+
+Insert a character
+Delete a character
+Replace a character
+
+
+Problem Constraints
+1 <= length(A), length(B) <= 450
+
+
+
+Input Format
+The first argument of input contains a string, A.
+The second argument of input contains a string, B.
+
+
+
+Output Format
+Return an integer, representing the minimum number of steps required.
+
+
+
+Example Input
+Input 1:
+
+ A = "abad"
+ B = "abac"
+Input 2:
+
+ A = "Anshuman"
+ B = "Antihuman
+
+
+Example Output
+Output 1:
+
+ 1
+Output 2:
+
+ 2
+
+
+Example Explanation
+Exlanation 1:
+
+ A = "abad" and B = "abac"
+ After applying operation: Replace d with c. We get A = B.
+ 
+Explanation 2:
+
+ A = "Anshuman" and B = "Antihuman"
+ After applying operations: Replace s with t and insert i before h. We get A = B. */
+
+// TC:O(LenA*LenB) SC:O(lenA*lenB)
+public class Solution {
+    public int minDistance(String A, String B) {
+        int lenA=A.length();
+        int lenB=B.length();
+        int[][] dp = new int[lenA][lenB];
+        
+        for(int i=0;i<lenA;i++)
+            Arrays.fill(dp[i],-1);
+        int ans = actionsAtoB(A,B,lenA-1,lenB-1,dp);
+        return ans;
+    }
+    public int actionsAtoB(String A,String B,int idxA,int idxB,int[][] dp)
+    {
+        // all charecters validated, no more action
+        if(idxA<0 && idxB<0)
+            return 0;
+        
+        // chars in B remaining, but A ended, need to insert remaining chars(idxB+1) to A 
+        if(idxA<0)
+            return idxB+1;
+
+        // chars in A remaining, but B ended, need to delete remaining chars(idxA+1) from A
+        if(idxB<0)
+            return idxA+1;
+
+        if(dp[idxA][idxB]!=-1)
+            return dp[idxA][idxB];
+
+        int actions = 0;
+        if(A.charAt(idxA)==B.charAt(idxB))
+        {
+            actions=actionsAtoB(A,B,idxA-1,idxB-1,dp);
+        }
+        else
+        {
+            int del = actionsAtoB(A,B,idxA-1,idxB,dp);
+            int ins = actionsAtoB(A,B,idxA,idxB-1,dp);
+            int rep = actionsAtoB(A,B,idxA-1,idxB-1,dp);
+            actions=Math.min(del,Math.min(ins,rep))+1; //+1 for the action taken on this step(delete/insert/replace)
+        }
+        dp[idxA][idxB]=actions;
+        return dp[idxA][idxB];
+    }
+}
