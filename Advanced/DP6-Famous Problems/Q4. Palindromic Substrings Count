@@ -1,0 +1,73 @@
+/* Q4. Palindromic Substrings Count
+
+Given a string A consisting of lowercase English alphabets. Your task is to find how many substrings of A are palindrome.
+
+The substrings with different start indexes or end indexes are counted as different substrings even if they consist of same characters.
+
+Return the count of palindromic substrings.
+
+Note: A string is palindrome if it reads the same from backward and forward.
+
+
+Input Format
+
+The only argument given is string A.
+Output Format
+
+Return the count of palindromic substrings.
+Constraints
+
+1 <= length of the array <= 1000
+For Example
+
+Input 1:
+    A = "abab"
+Output 1:
+    6
+Explanation 1:
+    6 palindromic substrings are:
+    "a", "aba", "b", "bab", "a" and "b".
+
+Input 2:
+    A = "ababa"
+Output 2:
+    9
+Explanation 9:
+    9 palindromic substrings are:
+    "a", "a", "a", "b", "b" , "aba" ,"bab", "aba" and "ababa". */
+
+// create a 2d dp array, dp[st][en] stores T/F based on if A[st] to A[en] is Palimdrome or not
+// edge cases, where st>en is not valid, so lower half of dp array is not valid
+// for diagonal where st==en, it is always true
+// for diagonal where en-st=1, if A[st]==A[en] then true
+// otherwise dp[st][en] ==> if A[st]==A[en] then dp[st][en]=dp[st+1][eb-1] --> checking next characters are palimdrome or not
+// check all 4 diagonals from st==eb to st>en (above half of matrix)
+public class Solution {
+    public int solve(String A) {
+        int n=A.length();
+        boolean[][] dp = new boolean[n][n];
+        int count =0;
+        for(int d=0;d<n;d++)
+        {
+            int st=0; 
+            int en=d;
+            while(en<n)
+            {
+                if(d==0)
+                    dp[st][en]=true;
+                else if(d==1 && A.charAt(st)==A.charAt(en))
+                    dp[st][en]=true;
+                else if(d>1 && A.charAt(st)==A.charAt(en))
+                    dp[st][en]=dp[st+1][en-1];
+
+                // count no of times we got true, that is count of substring that are palindrome
+                if(dp[st][en]==true)
+                    count++;
+
+                st++;
+                en++;                
+            }
+        }
+        return count;
+    }
+}
