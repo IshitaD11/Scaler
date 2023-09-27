@@ -1,0 +1,85 @@
+/* Q2. Longest Palindromic Subsequence
+
+Problem Description
+Given a string A. Find the longest palindromic subsequence (A subsequence which does not need to be contiguous and is a palindrome).
+
+You need to return the length of longest palindromic subsequence.
+
+
+
+Problem Constraints
+1 <= length of(A) <= 103
+
+
+
+Input Format
+First and only integer is a string A.
+
+
+
+Output Format
+Return an integer denoting the length of longest palindromic subsequence.
+
+
+
+Example Input
+Input 1:
+
+ A = "bebeeed"
+Input 2:
+
+ A = "aedsead"
+
+
+Example Output
+Output 1:
+
+ 4
+Output 2:
+
+ 5
+
+
+Example Explanation
+Explanation 1:
+
+ The longest palindromic subsequence is "eeee", which has a length of 4.
+Explanation 2:
+
+ The longest palindromic subsequence is "aedea", which has a length of 5. */
+
+// for longest palindromic subsequence start checking with 2 pointers at both the end. 
+// if the chars matches, then next check for (i+1),(j-1) and length is +2 beacase the chars matches it could be part of palindrome
+// if the end chars doesnot match, try to check if (i+1,j) or (i,j-1) is palindrome or not, get the max length for both these option
+
+public class Solution {
+    public int solve(String A) {
+        int len = A.length();
+        int[][] dp = new int[len][len];
+        int ans = longestPalindrome(A,0,len-1,dp);
+        return ans;
+    }
+    public int longestPalindrome(String A,int st,int en,int[][] dp)
+    {
+        if(st==en) //single char is palindrome
+            return 1;
+
+        if(st>en) //invalid index
+            return 0;
+
+        if(dp[st][en]!=0)
+            return dp[st][en];
+
+        int ans=0;
+        if(A.charAt(st)==A.charAt(en))
+            ans = longestPalindrome(A,st+1,en-1,dp)+2;
+        else
+        {
+            int p1 = longestPalindrome(A,st+1,en,dp);
+            int p2 = longestPalindrome(A,st,en-1,dp);
+            ans = Math.max(p1,p2);
+        }
+        dp[st][en]=ans;
+        return dp[st][en];
+    }
+}
