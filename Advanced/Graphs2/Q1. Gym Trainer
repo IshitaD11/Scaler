@@ -1,0 +1,130 @@
+/* Q1. Gym Trainer
+
+Problem Description
+
+You are the trainer of a gym and there are A people who come to your gym.
+
+Some of them are friends because they walk together, and some of them are friends because they talk together.
+But people become possessive about each other, so a person cannot walk with one friend and talk with another. Although he can walk with two or more people or talk with two or more people.
+
+You being the trainer, decided to suggest each one of the 2 possible diets. But friends, being friends will always have the same diet as all the other friends are having.
+
+Find and return the number of ways you can suggest each of them a diet.
+
+As the number of ways can be huge, return the answer modulo 109+7.
+
+NOTE: If there is any person who walks with one person and talks with the another person, then you may return 0.
+
+
+
+Problem Constraints
+
+1 <= A, N, M <= 105
+
+1 <= B[i][0], B[i][1], C[i][0], C[i][1] <= A
+
+
+
+Input Format
+
+The first argument contains an integer A, representing the number of people.
+The second argument contains a 2-D integer array B of size N x 2, where B[i][0] and B[i][1] are friends because they walk together.
+The third argument contains a 2-D integer array C of size M x 2, where C[i][0] and C[i][1] are friends because they talk together.
+
+
+
+Output Format
+
+Return an integer representing the number of ways to suggest one of the two diets to the people.
+
+
+
+Example Input
+
+Input 1:
+
+ A = 4
+ B = [
+       [1, 2]
+     ]
+ C = [
+       [3, 4]
+     ]
+Input 2:
+
+ A = 3
+ B = [
+       [1, 2]
+     ]
+ C = [
+       [1, 3] 
+     ] */
+
+// Apply DSU and get count of parents, those will be different sets. Ways to distribute 2 diet in n sets is 2^n ways
+
+
+public class Solution {
+    public int solve(int A, int[][] B, int[][] C) {
+        // check if any nodes comes in both walk and talk array, just return -1
+        HashSet<Integer> set = new HashSet<>();
+        // create parent array
+        int[] par = new int[A+1];
+        // initialize all with self as parent
+        for(int i=0;i<=A;i++)
+            par[i]=i;
+
+        // iterate over B
+        for(int i=0;i<B.length;i++)
+        {
+            set.add(B[i][0]);
+            set.add(B[i][1]);
+            int x = root(B[i][0],par);
+            int y = root(B[i][1],par);
+            if(x!=y)
+                par[x]=y;
+        }
+
+        // iterate over c
+        for(int i=0;i<C.length;i++)
+        {
+            if(set.contains(C[i][0]) || set.contains(C[i][1]))
+                return 0;
+            else
+            {
+                int x = root(C[i][0],par);
+                int y = root(C[i][1],par);
+                if(x!=y)
+                    par[x]=y;
+            }
+        }
+
+        int cnt=0;
+        // finally identify the count of parents, that is each set
+        for(int i=1;i<=A;i++)
+        {
+            if(par[i]==i)
+                cnt++;
+        } 
+        // System.out.println(Arrays.toString(par));
+        long mod = 1000000007;
+        long pow=1;
+        // no of ways is 2^(set cnt)
+
+        while(cnt>0)
+        {
+            pow=(2*pow)%mod;
+            cnt--;
+        }
+        return (int)(pow%mod);
+    }
+
+    public int root(int idx,int[] par)
+    {
+        if(par[idx]==idx)
+            return idx;
+        
+        int root = root(par[idx],par);
+        par[idx]=root;
+        return root;
+    }
+}
